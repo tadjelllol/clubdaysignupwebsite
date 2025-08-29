@@ -1,103 +1,519 @@
-import Image from "next/image";
+"use client"
 
-export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+import type React from "react"
+import { useState, useEffect } from "react"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Users, Smartphone, Laptop, Sparkles, Film, Wrench, Settings, EyeOff } from "lucide-react"
+import { useToast } from "@/hooks/use-toast"
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+const initialClubs = [
+  {
+    id: "engineering",
+    name: "Engineering Club",
+    sheetId: "YOUR_ENGINEERING_SHEET_ID",
+    icon: Wrench,
+    description: "Build, innovate, and engineer the future",
+    colors: {
+      primary: "bg-sky-500 hover:bg-sky-600 text-white",
+      accent: "border-sky-200 bg-sky-50",
+      text: "text-sky-700",
+      gradient: "from-sky-400 to-blue-500",
+    },
+  },
+  {
+    id: "cinema",
+    name: "Cinema Club",
+    sheetId: "YOUR_CINEMA_SHEET_ID",
+    icon: Film,
+    description: "Lights, camera, action! Create cinematic magic",
+    colors: {
+      primary: "bg-red-600 hover:bg-red-700 text-white",
+      accent: "border-red-200 bg-red-50",
+      text: "text-red-700",
+      gradient: "from-red-500 to-black",
+    },
+  },
+  {
+    id: "scholars",
+    name: "McRoberts Scholars",
+    sheetId: "YOUR_SCHOLARS_SHEET_ID",
+    icon: Sparkles,
+    description: "Excellence in academics and leadership",
+    colors: {
+      primary: "bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 text-white",
+      accent: "border-emerald-200 bg-gradient-to-r from-emerald-50 to-blue-50",
+      text: "text-emerald-700",
+      gradient: "from-emerald-500 via-yellow-400 to-blue-500",
+    },
+  },
+]
+
+const grades = ["9", "10", "11", "12"]
+
+export default function ClubRegistration() {
+  const [isAdmin, setIsAdmin] = useState(false)
+  const [adminPassword, setAdminPassword] = useState("")
+  const [showAdminLogin, setShowAdminLogin] = useState(false)
+  const [clubs, setClubs] = useState(initialClubs)
+  const [websiteUrl, setWebsiteUrl] = useState("")
+  const [isMobile, setIsMobile] = useState(false)
+
+  const [selectedClub, setSelectedClub] = useState("")
+  const [qrCodeUrl, setQrCodeUrl] = useState("")
+  const [formData, setFormData] = useState({
+    email: "",
+    name: "",
+    grade: "",
+    photoConsent: false,
+    discord: "",
+  })
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const { toast } = useToast()
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setIsMobile(window.innerWidth < 768)
+      const url = websiteUrl || window.location.href
+      setQrCodeUrl(`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(url)}`)
+    }
+  }, [websiteUrl])
+
+  const handleAdminLogin = () => {
+    if (adminPassword === "123") {
+      setIsAdmin(true)
+      setShowAdminLogin(false)
+      toast({
+        title: "Admin access granted",
+        description: "You can now manage clubs and settings.",
+      })
+    } else {
+      toast({
+        title: "Invalid password",
+        description: "Please try again.",
+        variant: "destructive",
+      })
+    }
+  }
+
+  const updateClubSheetId = (clubId: string, sheetId: string) => {
+    setClubs((prev) => prev.map((club) => (club.id === clubId ? { ...club, sheetId } : club)))
+  }
+
+  const currentClub = clubs.find((c) => c.id === selectedClub)
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!selectedClub) {
+      toast({
+        title: "Please select a club",
+        description: "You need to choose which club you're registering for.",
+        variant: "destructive",
+      })
+      return
+    }
+
+    setIsSubmitting(true)
+
+    try {
+      const club = clubs.find((c) => c.id === selectedClub)
+      const timestamp = new Date().toISOString()
+
+      console.log("Submitting to sheet:", club?.sheetId, {
+        timestamp,
+        email: formData.email,
+        name: formData.name,
+        grade: formData.grade,
+        photoConsent: formData.photoConsent ? "Yes" : "No",
+        discord: formData.discord || "Not provided",
+      })
+
+      toast({
+        title: "Registration successful!",
+        description: `Welcome to ${club?.name}! Check your email for more details.`,
+      })
+
+      setFormData({
+        email: "",
+        name: "",
+        grade: "",
+        photoConsent: false,
+        discord: "",
+      })
+    } catch (error) {
+      toast({
+        title: "Registration failed",
+        description: "Please try again or register manually with a club officer.",
+        variant: "destructive",
+      })
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  if (isAdmin) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4">
+        <div className="mx-auto max-w-4xl space-y-8">
+          <div className="flex justify-between items-center">
+            <h1 className="text-3xl font-bold text-slate-800">Admin Panel</h1>
+            <Button onClick={() => setIsAdmin(false)} variant="outline">
+              Back to Registration
+            </Button>
+          </div>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Website URL Configuration</CardTitle>
+              <CardDescription>Set the URL that the QR code will point to</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label htmlFor="website-url">Website URL</Label>
+                <Input
+                  id="website-url"
+                  placeholder="https://your-deployed-website.vercel.app"
+                  value={websiteUrl}
+                  onChange={(e) => setWebsiteUrl(e.target.value)}
+                />
+              </div>
+              <p className="text-sm text-slate-600">Current QR code points to: {websiteUrl || "Current page URL"}</p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Google Sheets Configuration</CardTitle>
+              <CardDescription>Set up your Google Sheet IDs for each club</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {clubs.map((club) => (
+                <div key={club.id} className="space-y-2">
+                  <Label htmlFor={`${club.id}-sheet`}>{club.name} Sheet ID</Label>
+                  <Input
+                    id={`${club.id}-sheet`}
+                    placeholder="Enter Google Sheet ID"
+                    value={club.sheetId}
+                    onChange={(e) => updateClubSheetId(club.id, e.target.value)}
+                  />
+                </div>
+              ))}
+              <div className="bg-amber-50 p-4 rounded-lg border border-amber-200">
+                <h4 className="font-medium text-amber-800 mb-2">Required Column Headers:</h4>
+                <div className="text-xs font-mono bg-white p-2 rounded border overflow-x-auto">
+                  Timestamp | Email Address | What is your name (First and Last)? | What grade are you in this year? |
+                  We will be taking photos of club activities this year. These photos may also be used in the yearbook
+                  and club media. Do you agree to being subject of photography? | Discord Username (Optional)
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </div>
+    )
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4">
+      <div className="mx-auto max-w-6xl space-y-8">
+        <div className="fixed top-4 right-4 z-50">
+          {!showAdminLogin ? (
+            <Button
+              onClick={() => setShowAdminLogin(true)}
+              variant="ghost"
+              size="sm"
+              className="bg-white/80 backdrop-blur-sm"
+            >
+              <Settings className="h-4 w-4" />
+            </Button>
+          ) : (
+            <Card className="w-64">
+              <CardContent className="p-4 space-y-3">
+                <div className="flex items-center justify-between">
+                  <Label>Admin Login</Label>
+                  <Button onClick={() => setShowAdminLogin(false)} variant="ghost" size="sm">
+                    <EyeOff className="h-4 w-4" />
+                  </Button>
+                </div>
+                <Input
+                  type="password"
+                  placeholder="Password"
+                  value={adminPassword}
+                  onChange={(e) => setAdminPassword(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleAdminLogin()}
+                />
+                <Button onClick={handleAdminLogin} size="sm" className="w-full">
+                  Login
+                </Button>
+              </CardContent>
+            </Card>
+          )}
+        </div>
+
+        <div className="text-center space-y-6">
+          <div className="relative">
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-purple-600 to-red-600 rounded-2xl blur-xl opacity-20"></div>
+            <div className="relative bg-white rounded-2xl p-8 shadow-lg border">
+              <div className="flex items-center justify-center gap-3 mb-4">
+                <Users className="h-10 w-10 text-blue-600" />
+                <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                  Club Registration
+                </h1>
+              </div>
+              <p className="text-slate-600 text-xl font-medium">Join the excitement of Clubs Day!</p>
+
+              <div className="flex items-center justify-center gap-8 mt-6 text-sm text-slate-500">
+                <div className="flex items-center gap-2">
+                  <Smartphone className="h-5 w-5 text-green-500" />
+                  <span>Scan QR code on mobile</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Laptop className="h-5 w-5 text-blue-500" />
+                  <span>Or use this laptop</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {isMobile && (
+          <div className="grid gap-4 md:grid-cols-3">
+            {clubs.map((club) => {
+              const Icon = club.icon
+              const isSelected = selectedClub === club.id
+              return (
+                <Card
+                  key={club.id}
+                  className={`cursor-pointer transition-all duration-300 hover:scale-105 ${
+                    isSelected ? `ring-2 ring-offset-2 ${club.colors.accent} shadow-lg` : "hover:shadow-md"
+                  }`}
+                  onClick={() => setSelectedClub(club.id)}
+                >
+                  <CardContent className="p-6 text-center">
+                    <div
+                      className={`w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r ${club.colors.gradient} flex items-center justify-center`}
+                    >
+                      <Icon className="h-8 w-8 text-white" />
+                    </div>
+                    <h3 className={`font-bold text-lg mb-2 ${isSelected ? club.colors.text : "text-slate-700"}`}>
+                      {club.name}
+                    </h3>
+                    <p className="text-sm text-slate-500">{club.description}</p>
+                    {isSelected && (
+                      <div className="mt-3 px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">
+                        Selected ✓
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              )
+            })}
+          </div>
+        )}
+
+        <div className={`grid gap-8 ${!isMobile ? "lg:grid-cols-2" : ""}`}>
+          {/* Registration Section */}
+          <div className="space-y-6">
+            {!isMobile && (
+              <div className="grid gap-4 md:grid-cols-3">
+                {clubs.map((club) => {
+                  const Icon = club.icon
+                  const isSelected = selectedClub === club.id
+                  return (
+                    <Card
+                      key={club.id}
+                      className={`cursor-pointer transition-all duration-300 hover:scale-105 ${
+                        isSelected ? `ring-2 ring-offset-2 ${club.colors.accent} shadow-lg` : "hover:shadow-md"
+                      }`}
+                      onClick={() => setSelectedClub(club.id)}
+                    >
+                      <CardContent className="p-6 text-center">
+                        <div
+                          className={`w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r ${club.colors.gradient} flex items-center justify-center`}
+                        >
+                          <Icon className="h-8 w-8 text-white" />
+                        </div>
+                        <h3 className={`font-bold text-lg mb-2 ${isSelected ? club.colors.text : "text-slate-700"}`}>
+                          {club.name}
+                        </h3>
+                        <p className="text-sm text-slate-500">{club.description}</p>
+                        {isSelected && (
+                          <div className="mt-3 px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">
+                            Selected ✓
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
+                  )
+                })}
+              </div>
+            )}
+
+            {selectedClub && (
+              <Card className={`${currentClub?.colors.accent} shadow-lg`}>
+                <CardHeader>
+                  <CardTitle className={`text-2xl ${currentClub?.colors.text} flex items-center gap-2`}>
+                    {currentClub && <currentClub.icon className="h-6 w-6" />}
+                    Registration Details
+                  </CardTitle>
+                  <CardDescription className="text-base">
+                    Fill out your information to join {clubs.find((c) => c.id === selectedClub)?.name}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <form onSubmit={handleSubmit} className="space-y-6">
+                    <div className="grid gap-6 md:grid-cols-2">
+                      <div className="space-y-2">
+                        <Label htmlFor="name" className="text-base font-medium">
+                          Full Name *
+                        </Label>
+                        <Input
+                          id="name"
+                          placeholder="First and Last Name"
+                          value={formData.name}
+                          onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
+                          className="h-12"
+                          required
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="grade" className="text-base font-medium">
+                          Grade *
+                        </Label>
+                        <Select
+                          value={formData.grade}
+                          onValueChange={(value) => setFormData((prev) => ({ ...prev, grade: value }))}
+                          required
+                        >
+                          <SelectTrigger className="h-12">
+                            <SelectValue placeholder="Select grade" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {grades.map((grade) => (
+                              <SelectItem key={grade} value={grade}>
+                                Grade {grade}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="email" className="text-base font-medium">
+                        Email Address *
+                      </Label>
+                      <Input
+                        id="email"
+                        type="email"
+                        placeholder="your.email@school.edu"
+                        value={formData.email}
+                        onChange={(e) => setFormData((prev) => ({ ...prev, email: e.target.value }))}
+                        className="h-12"
+                        required
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="discord" className="text-base font-medium">
+                        Discord Username (Optional)
+                      </Label>
+                      <Input
+                        id="discord"
+                        placeholder="username#1234"
+                        value={formData.discord}
+                        onChange={(e) => setFormData((prev) => ({ ...prev, discord: e.target.value }))}
+                        className="h-12"
+                      />
+                    </div>
+
+                    <div className="flex items-start space-x-3 p-4 bg-white rounded-lg border">
+                      <Checkbox
+                        id="photo-consent"
+                        checked={formData.photoConsent}
+                        onCheckedChange={(checked) =>
+                          setFormData((prev) => ({ ...prev, photoConsent: checked as boolean }))
+                        }
+                      />
+                      <div className="grid gap-2 leading-none">
+                        <Label
+                          htmlFor="photo-consent"
+                          className="text-base font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >
+                          Photo Consent
+                        </Label>
+                        <p className="text-sm text-slate-600">
+                          I agree to being photographed during club activities. These photos may be used in the yearbook
+                          and club media.
+                        </p>
+                      </div>
+                    </div>
+
+                    <Button
+                      type="submit"
+                      className={`w-full h-14 text-lg font-semibold ${currentClub?.colors.primary || "bg-primary hover:bg-primary/90"}`}
+                      disabled={isSubmitting}
+                    >
+                      {isSubmitting ? "Registering..." : `Join ${currentClub?.name} Now!`}
+                    </Button>
+                  </form>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+
+          {!isMobile && (
+            <div className="space-y-6">
+              <Card className="bg-white shadow-lg sticky top-4">
+                <CardHeader>
+                  <CardTitle className="text-center text-blue-700">Mobile Registration</CardTitle>
+                  <CardDescription className="text-center">
+                    Students can scan this QR code to register on their phones
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="text-center space-y-4">
+                  {qrCodeUrl && (
+                    <div className="flex justify-center">
+                      <img
+                        src={qrCodeUrl || "/placeholder.svg"}
+                        alt="QR Code for mobile registration"
+                        className="w-64 h-64 border-2 border-slate-200 rounded-lg"
+                      />
+                    </div>
+                  )}
+                  <p className="text-sm text-slate-600">Scan with phone camera</p>
+                  <p className="text-xs text-slate-500">Points to: {websiteUrl || window.location.href}</p>
+                </CardContent>
+              </Card>
+            </div>
+          )}
+        </div>
+
+        {isMobile && (
+          <Card className="bg-white shadow-lg">
+            <CardHeader>
+              <CardTitle className="text-center text-blue-700">For Laptop Users</CardTitle>
+            </CardHeader>
+            <CardContent className="text-center space-y-4">
+              {qrCodeUrl && (
+                <div className="flex justify-center">
+                  <img
+                    src={qrCodeUrl || "/placeholder.svg"}
+                    alt="QR Code for mobile registration"
+                    className="w-48 h-48 border-2 border-slate-200 rounded-lg"
+                  />
+                </div>
+              )}
+              <p className="text-sm text-slate-600">Show this QR code to students without phones</p>
+            </CardContent>
+          </Card>
+        )}
+      </div>
     </div>
-  );
+  )
 }
