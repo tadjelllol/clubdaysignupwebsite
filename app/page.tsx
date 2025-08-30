@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Users, Smartphone, Laptop, Sparkles, Film, Wrench, Settings, EyeOff } from "lucide-react"
-import { useToast } from "@/hooks/use-toast"
+import { useToastContext } from "@/components/toast-provider"
 
 const initialClubs = [
   {
@@ -73,7 +73,7 @@ export default function ClubRegistration() {
     discord: "",
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const { toast } = useToast()
+  const { toast } = useToastContext()
 
   useEffect(() => {
     if (typeof window !== "undefined") {
