@@ -9,7 +9,8 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Users, Smartphone, Laptop, Sparkles, Film, Wrench, Settings, EyeOff } from "lucide-react"
-import { useToastContext } from "@/components/toast-provider"
+import { useToast } from "@/hooks/use-toast"
+import Image from "next/image"
 
 const initialClubs = [
   {
@@ -73,7 +74,7 @@ export default function ClubRegistration() {
     discord: "",
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const { toast } = useToastContext()
+  const { toast } = useToast()
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -102,28 +103,6 @@ export default function ClubRegistration() {
 
   const updateClubSheetId = (clubId: string, sheetId: string) => {
     setClubs((prev) => prev.map((club) => (club.id === clubId ? { ...club, sheetId } : club)))
-  }
-
-  const createGoogleSheet = async (clubName: string) => {
-    try {
-      const response = await fetch("/api/create-sheet", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ clubName }),
-      })
-
-      if (!response.ok) {
-        throw new Error("Failed to create sheet")
-      }
-
-      const data = await response.json()
-      return data.sheetId
-    } catch (error) {
-      console.error("Error creating sheet:", error)
-      throw error
-    }
   }
 
   const createAllSheets = async () => {
@@ -176,7 +155,7 @@ export default function ClubRegistration() {
           description: "All sheets for the current academic year already exist.",
         })
       }
-    } catch (error) {
+    } catch {
       toast({
         title: "Failed to create sheets",
         description: "Please check your Google API credentials and try again.",
@@ -238,7 +217,7 @@ export default function ClubRegistration() {
         photoConsent: false,
         discord: "",
       })
-    } catch (error) {
+    } catch {
       toast({
         title: "Registration failed",
         description: "Please try again or register manually with a club officer.",
@@ -588,15 +567,19 @@ export default function ClubRegistration() {
                 <CardContent className="text-center space-y-4">
                   {qrCodeUrl && (
                     <div className="flex justify-center">
-                      <img
+                      <Image
                         src={qrCodeUrl || "/placeholder.svg"}
                         alt="QR Code for mobile registration"
-                        className="w-64 h-64 border-2 border-slate-200 rounded-lg"
+                        width={256}
+                        height={256}
+                        className="border-2 border-slate-200 rounded-lg"
                       />
                     </div>
                   )}
                   <p className="text-sm text-slate-600">Scan with phone camera</p>
-                  <p className="text-xs text-slate-500">Points to: {websiteUrl || window.location.href}</p>
+                  <p className="text-xs text-slate-500">
+                    Points to: {websiteUrl || (typeof window !== "undefined" ? window.location.href : "")}
+                  </p>
                 </CardContent>
               </Card>
             </div>
@@ -611,10 +594,12 @@ export default function ClubRegistration() {
             <CardContent className="text-center space-y-4">
               {qrCodeUrl && (
                 <div className="flex justify-center">
-                  <img
+                  <Image
                     src={qrCodeUrl || "/placeholder.svg"}
                     alt="QR Code for mobile registration"
-                    className="w-48 h-48 border-2 border-slate-200 rounded-lg"
+                    width={192}
+                    height={192}
+                    className="border-2 border-slate-200 rounded-lg"
                   />
                 </div>
               )}
