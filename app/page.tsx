@@ -536,8 +536,14 @@ export default function ClubRegistration() {
                           Photo Consent
                         </Label>
                         <p className="text-sm text-slate-600">
-                          I agree to being photographed during club activities. These photos may be used in the
-                          &quot;yearbook&quot; and club media.
+                        <p>
+  I agree to being photographed during club activities. These photos may be used in the &quot;yearbook&quot; and club media.
+</p>
+
+<p>
+  Don&apos;t forget to sign up!
+</p>
+
                         </p>
                       </div>
                     </div>
