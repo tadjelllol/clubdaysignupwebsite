@@ -104,6 +104,87 @@ export default function ClubRegistration() {
     setClubs((prev) => prev.map((club) => (club.id === clubId ? { ...club, sheetId } : club)))
   }
 
+  const createGoogleSheet = async (clubName: string) => {
+    try {
+      const response = await fetch("/api/create-sheet", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ clubName }),
+      })
+
+      if (!response.ok) {
+        throw new Error("Failed to create sheet")
+      }
+
+      const data = await response.json()
+      return data.sheetId
+    } catch (error) {
+      console.error("Error creating sheet:", error)
+      throw error
+    }
+  }
+
+  const createAllSheets = async () => {
+    try {
+      const updatedClubs = [...clubs]
+      const results = []
+
+      for (let i = 0; i < updatedClubs.length; i++) {
+        const club = updatedClubs[i]
+        toast({
+          title: `Creating sheet for ${club.name}...`,
+          description: "Please wait while we set up your Google Sheet.",
+        })
+
+        const response = await fetch("/api/create-sheet", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ clubName: club.name }),
+        })
+
+        if (!response.ok) {
+          throw new Error(`Failed to create sheet for ${club.name}`)
+        }
+
+        const data = await response.json()
+        updatedClubs[i] = { ...club, sheetId: data.sheetId }
+        results.push(data)
+      }
+
+      setClubs(updatedClubs)
+
+      const newSheets = results.filter((r) => !r.existing)
+      const existingSheets = results.filter((r) => r.existing)
+
+      if (newSheets.length > 0 && existingSheets.length > 0) {
+        toast({
+          title: "Sheets updated!",
+          description: `Created ${newSheets.length} new sheets, ${existingSheets.length} already existed for this academic year.`,
+        })
+      } else if (newSheets.length > 0) {
+        toast({
+          title: "All sheets created successfully!",
+          description: `Created ${newSheets.length} new sheets for the current academic year.`,
+        })
+      } else {
+        toast({
+          title: "Sheets already exist!",
+          description: "All sheets for the current academic year already exist.",
+        })
+      }
+    } catch (error) {
+      toast({
+        title: "Failed to create sheets",
+        description: "Please check your Google API credentials and try again.",
+        variant: "destructive",
+      })
+    }
+  }
+
   const currentClub = clubs.find((c) => c.id === selectedClub)
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -123,14 +204,27 @@ export default function ClubRegistration() {
       const club = clubs.find((c) => c.id === selectedClub)
       const timestamp = new Date().toISOString()
 
-      console.log("Submitting to sheet:", club?.sheetId, {
-        timestamp,
-        email: formData.email,
-        name: formData.name,
-        grade: formData.grade,
-        photoConsent: formData.photoConsent ? "Yes" : "No",
-        discord: formData.discord || "Not provided",
+      const response = await fetch("/api/submit-registration", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          sheetId: club?.sheetId,
+          data: {
+            timestamp,
+            email: formData.email,
+            name: formData.name,
+            grade: formData.grade,
+            photoConsent: formData.photoConsent ? "Yes" : "No",
+            discord: formData.discord || "Not provided",
+          },
+        }),
       })
+
+      if (!response.ok) {
+        throw new Error("Failed to submit registration")
+      }
 
       toast({
         title: "Registration successful!",
@@ -191,24 +285,39 @@ export default function ClubRegistration() {
               <CardDescription>Set up your Google Sheet IDs for each club</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              {clubs.map((club) => (
-                <div key={club.id} className="space-y-2">
-                  <Label htmlFor={`${club.id}-sheet`}>{club.name} Sheet ID</Label>
-                  <Input
-                    id={`${club.id}-sheet`}
-                    placeholder="Enter Google Sheet ID"
-                    value={club.sheetId}
-                    onChange={(e) => updateClubSheetId(club.id, e.target.value)}
-                  />
+              <div className="flex justify-between items-center">
+                <div>
+                  <h4 className="font-medium text-slate-800">Auto-Create Sheets</h4>
+                  <p className="text-sm text-slate-600">Automatically create Google Sheets with proper headers</p>
                 </div>
-              ))}
+                <Button onClick={createAllSheets} className="bg-green-600 hover:bg-green-700">
+                  Create All Sheets
+                </Button>
+              </div>
+
+              <div className="border-t pt-4">
+                <h4 className="font-medium text-slate-800 mb-4">Manual Sheet ID Entry</h4>
+                {clubs.map((club) => (
+                  <div key={club.id} className="space-y-2 mb-4">
+                    <Label htmlFor={`${club.id}-sheet`}>{club.name} Sheet ID</Label>
+                    <Input
+                      id={`${club.id}-sheet`}
+                      placeholder="Enter Google Sheet ID"
+                      value={club.sheetId}
+                      onChange={(e) => updateClubSheetId(club.id, e.target.value)}
+                    />
+                  </div>
+                ))}
+              </div>
+
               <div className="bg-amber-50 p-4 rounded-lg border border-amber-200">
-                <h4 className="font-medium text-amber-800 mb-2">Required Column Headers:</h4>
-                <div className="text-xs font-mono bg-white p-2 rounded border overflow-x-auto">
-                  Timestamp | Email Address | What is your name (First and Last)? | What grade are you in this year? |
-                  We will be taking photos of club activities this year. These photos may also be used in the yearbook
-                  and club media. Do you agree to being subject of photography? | Discord Username (Optional)
-                </div>
+                <h4 className="font-medium text-amber-800 mb-2">How It Works:</h4>
+                <ul className="text-sm text-amber-700 space-y-1">
+                  <li>• Creates new sheets each academic year (e.g., "Engineering Club Registration 2025/2026")</li>
+                  <li>• Keeps previous years' data in separate sheets</li>
+                  <li>• Academic year starts in August</li>
+                  <li>• If sheets already exist for current year, uses existing ones</li>
+                </ul>
               </div>
             </CardContent>
           </Card>
