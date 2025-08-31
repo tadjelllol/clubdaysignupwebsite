@@ -63,6 +63,7 @@ export default function ClubRegistration() {
   const [clubs, setClubs] = useState(initialClubs)
   const [websiteUrl, setWebsiteUrl] = useState("")
   const [isMobile, setIsMobile] = useState(false)
+  const [mounted, setMounted] = useState(false)
 
   const [selectedClub, setSelectedClub] = useState("")
   const [qrCodeUrl, setQrCodeUrl] = useState("")
@@ -77,10 +78,11 @@ export default function ClubRegistration() {
   const { toast } = useToast()
 
   useEffect(() => {
+    setMounted(true)
     if (typeof window !== "undefined") {
       setIsMobile(window.innerWidth < 768)
       const url = websiteUrl || window.location.href
-      setQrCodeUrl(`https://qr-server.com/api/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(url)}`)
+      setQrCodeUrl(`https://api.qrserver.com/v1/create-qr-code/?size=256x256&data=${encodeURIComponent(url)}`)
     }
   }, [websiteUrl])
 
@@ -601,7 +603,7 @@ export default function ClubRegistration() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="text-center space-y-4">
-                  {qrCodeUrl ? (
+                  {mounted && qrCodeUrl ? (
                     <div className="flex justify-center">
                       <Image
                         src={qrCodeUrl || "/placeholder.svg"}
@@ -609,10 +611,15 @@ export default function ClubRegistration() {
                         width={256}
                         height={256}
                         className="border-2 border-slate-200 rounded-lg"
-                        onError={() => {
-                          setQrCodeUrl(
-                            `https://api.qrserver.com/v1/create-qr-code/?size=256x256&data=${encodeURIComponent(websiteUrl || (typeof window !== "undefined" ? window.location.href : ""))}`,
-                          )
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement
+                          const currentUrl = websiteUrl || (typeof window !== "undefined" ? window.location.href : "")
+
+                          if (target.src.includes("api.qrserver.com")) {
+                            target.src = `https://chart.googleapis.com/chart?chs=256x256&cht=qr&chl=${encodeURIComponent(currentUrl)}`
+                          } else if (target.src.includes("googleapis.com")) {
+                            target.src = "/qr-code-unavailable.png"
+                          }
                         }}
                       />
                     </div>
@@ -623,7 +630,8 @@ export default function ClubRegistration() {
                   )}
                   <p className="text-sm text-slate-600">Scan with phone camera</p>
                   <p className="text-xs text-slate-500">
-                    Points to: {websiteUrl || (typeof window !== "undefined" ? window.location.href : "")}
+                    Points to:{" "}
+                    {mounted ? websiteUrl || (typeof window !== "undefined" ? window.location.href : "") : "Loading..."}
                   </p>
                 </CardContent>
               </Card>
@@ -637,7 +645,7 @@ export default function ClubRegistration() {
               <CardTitle className="text-center text-blue-700">For Laptop Users</CardTitle>
             </CardHeader>
             <CardContent className="text-center space-y-4">
-              {qrCodeUrl ? (
+              {mounted && qrCodeUrl ? (
                 <div className="flex justify-center">
                   <Image
                     src={qrCodeUrl || "/placeholder.svg"}
@@ -645,10 +653,15 @@ export default function ClubRegistration() {
                     width={192}
                     height={192}
                     className="border-2 border-slate-200 rounded-lg"
-                    onError={() => {
-                      setQrCodeUrl(
-                        `https://api.qrserver.com/v1/create-qr-code/?size=192x192&data=${encodeURIComponent(websiteUrl || (typeof window !== "undefined" ? window.location.href : ""))}`,
-                      )
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement
+                      const currentUrl = websiteUrl || (typeof window !== "undefined" ? window.location.href : "")
+
+                      if (target.src.includes("api.qrserver.com")) {
+                        target.src = `https://chart.googleapis.com/chart?chs=192x192&cht=qr&chl=${encodeURIComponent(currentUrl)}`
+                      } else if (target.src.includes("googleapis.com")) {
+                        target.src = "/qr-code-unavailable.png"
+                      }
                     }}
                   />
                 </div>
