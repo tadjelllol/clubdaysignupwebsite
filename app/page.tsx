@@ -80,7 +80,7 @@ export default function ClubRegistration() {
     if (typeof window !== "undefined") {
       setIsMobile(window.innerWidth < 768)
       const url = websiteUrl || window.location.href
-      setQrCodeUrl(`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(url)}`)
+      setQrCodeUrl(`https://qr-server.com/api/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(url)}`)
     }
   }, [websiteUrl])
 
@@ -117,48 +117,68 @@ export default function ClubRegistration() {
           description: "Please wait while we set up your Google Sheet.",
         })
 
-        const response = await fetch("/api/create-sheet", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ clubName: club.name }),
-        })
+        try {
+          const response = await fetch("/api/create-sheet", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ clubName: club.name }),
+          })
 
-        if (!response.ok) {
-          throw new Error(`Failed to create sheet for ${club.name}`)
+          if (!response.ok) {
+            const errorText = await response.text()
+            throw new Error(`Failed to create sheet for ${club.name}: ${errorText}`)
+          }
+
+          const data = await response.json()
+          updatedClubs[i] = { ...club, sheetId: data.sheetId }
+          results.push(data)
+        } catch (error) {
+          console.error(`Error creating sheet for ${club.name}:`, error)
+          toast({
+            title: `Failed to create sheet for ${club.name}`,
+            description: "You can manually enter the Sheet ID in the admin panel.",
+            variant: "destructive",
+          })
         }
-
-        const data = await response.json()
-        updatedClubs[i] = { ...club, sheetId: data.sheetId }
-        results.push(data)
       }
 
-      setClubs(updatedClubs)
+      if (results.length > 0) {
+        setClubs(updatedClubs)
 
-      const newSheets = results.filter((r) => !r.existing)
-      const existingSheets = results.filter((r) => r.existing)
+        const newSheets = results.filter((r) => !r.existing)
+        const existingSheets = results.filter((r) => r.existing)
 
-      if (newSheets.length > 0 && existingSheets.length > 0) {
-        toast({
-          title: "Sheets updated!",
-          description: `Created ${newSheets.length} new sheets, ${existingSheets.length} already existed for this academic year.`,
-        })
-      } else if (newSheets.length > 0) {
-        toast({
-          title: "All sheets created successfully!",
-          description: `Created ${newSheets.length} new sheets for the current academic year.`,
-        })
+        if (newSheets.length > 0 && existingSheets.length > 0) {
+          toast({
+            title: "Sheets updated!",
+            description: `Created ${newSheets.length} new sheets, ${existingSheets.length} already existed for this academic year.`,
+          })
+        } else if (newSheets.length > 0) {
+          toast({
+            title: "All sheets created successfully!",
+            description: `Created ${newSheets.length} new sheets for the current academic year.`,
+          })
+        } else {
+          toast({
+            title: "Sheets already exist!",
+            description: "All sheets for the current academic year already exist.",
+          })
+        }
       } else {
         toast({
-          title: "Sheets already exist!",
-          description: "All sheets for the current academic year already exist.",
+          title: "Unable to create sheets automatically",
+          description:
+            "Please check your Google API credentials in environment variables, or manually enter Sheet IDs below.",
+          variant: "destructive",
         })
       }
-    } catch {
+    } catch (error) {
+      console.error("Error in createAllSheets:", error)
       toast({
         title: "Failed to create sheets",
-        description: "Please check your Google API credentials and try again.",
+        description: "Please check your Google API credentials and try again, or manually enter Sheet IDs.",
         variant: "destructive",
       })
     }
@@ -181,6 +201,17 @@ export default function ClubRegistration() {
 
     try {
       const club = clubs.find((c) => c.id === selectedClub)
+
+      if (!club?.sheetId || club.sheetId.startsWith("YOUR_")) {
+        toast({
+          title: "Sheet not configured",
+          description: "Please ask an admin to set up the Google Sheet for this club.",
+          variant: "destructive",
+        })
+        setIsSubmitting(false)
+        return
+      }
+
       const timestamp = new Date().toISOString()
 
       const response = await fetch("/api/submit-registration", {
@@ -202,7 +233,8 @@ export default function ClubRegistration() {
       })
 
       if (!response.ok) {
-        throw new Error("Failed to submit registration")
+        const errorText = await response.text()
+        throw new Error(`Failed to submit registration: ${errorText}`)
       }
 
       toast({
@@ -217,7 +249,8 @@ export default function ClubRegistration() {
         photoConsent: false,
         discord: "",
       })
-    } catch {
+    } catch (error) {
+      console.error("Registration error:", error)
       toast({
         title: "Registration failed",
         description: "Please try again or register manually with a club officer.",
@@ -290,12 +323,15 @@ export default function ClubRegistration() {
               </div>
 
               <div className="bg-amber-50 p-4 rounded-lg border border-amber-200">
-                <h4 className="font-medium text-amber-800 mb-2">How It Works:</h4>
+                <h4 className="font-medium text-amber-800 mb-2">Setup Instructions:</h4>
                 <ul className="text-sm text-amber-700 space-y-1">
+                  <li>
+                    • <strong>Environment Variables Required:</strong> GOOGLE_SERVICE_ACCOUNT_EMAIL, GOOGLE_PRIVATE_KEY
+                  </li>
                   <li>• Creates new sheets each academic year (e.g., "Engineering Club Registration 2025/2026")</li>
                   <li>• Keeps previous years' data in separate sheets</li>
                   <li>• Academic year starts in August</li>
-                  <li>• If sheets already exist for current year, uses existing ones</li>
+                  <li>• If auto-creation fails, manually enter Sheet IDs below</li>
                 </ul>
               </div>
             </CardContent>
@@ -536,14 +572,8 @@ export default function ClubRegistration() {
                           Photo Consent
                         </Label>
                         <p className="text-sm text-slate-600">
-                        <p>
-  I agree to being photographed during club activities. These photos may be used in the &quot;yearbook&quot; and club media.
-</p>
-
-<p>
-  Don&apos;t forget to sign up!
-</p>
-
+                          I agree to being photographed during club activities. These photos may be used in the
+                          &quot;yearbook&quot; and club media.
                         </p>
                       </div>
                     </div>
@@ -571,7 +601,7 @@ export default function ClubRegistration() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="text-center space-y-4">
-                  {qrCodeUrl && (
+                  {qrCodeUrl ? (
                     <div className="flex justify-center">
                       <Image
                         src={qrCodeUrl || "/placeholder.svg"}
@@ -579,7 +609,16 @@ export default function ClubRegistration() {
                         width={256}
                         height={256}
                         className="border-2 border-slate-200 rounded-lg"
+                        onError={() => {
+                          setQrCodeUrl(
+                            `https://api.qrserver.com/v1/create-qr-code/?size=256x256&data=${encodeURIComponent(websiteUrl || (typeof window !== "undefined" ? window.location.href : ""))}`,
+                          )
+                        }}
                       />
+                    </div>
+                  ) : (
+                    <div className="flex justify-center items-center w-64 h-64 bg-gray-100 border-2 border-gray-200 rounded-lg">
+                      <p className="text-gray-500">QR Code Loading...</p>
                     </div>
                   )}
                   <p className="text-sm text-slate-600">Scan with phone camera</p>
@@ -598,7 +637,7 @@ export default function ClubRegistration() {
               <CardTitle className="text-center text-blue-700">For Laptop Users</CardTitle>
             </CardHeader>
             <CardContent className="text-center space-y-4">
-              {qrCodeUrl && (
+              {qrCodeUrl ? (
                 <div className="flex justify-center">
                   <Image
                     src={qrCodeUrl || "/placeholder.svg"}
@@ -606,7 +645,16 @@ export default function ClubRegistration() {
                     width={192}
                     height={192}
                     className="border-2 border-slate-200 rounded-lg"
+                    onError={() => {
+                      setQrCodeUrl(
+                        `https://api.qrserver.com/v1/create-qr-code/?size=192x192&data=${encodeURIComponent(websiteUrl || (typeof window !== "undefined" ? window.location.href : ""))}`,
+                      )
+                    }}
                   />
+                </div>
+              ) : (
+                <div className="flex justify-center items-center w-48 h-48 bg-gray-100 border-2 border-gray-200 rounded-lg">
+                  <p className="text-gray-500">QR Code Loading...</p>
                 </div>
               )}
               <p className="text-sm text-slate-600">Show this QR code to students without phones</p>
