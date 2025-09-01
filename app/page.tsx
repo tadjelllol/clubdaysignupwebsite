@@ -93,6 +93,12 @@ export default function ClubRegistration() {
     }
   }, [mounted])
 
+  useEffect(() => {
+    if (mounted && !isAdmin) {
+      generateQRCode()
+    }
+  }, [mounted, isAdmin])
+
   const handleAdminLogin = () => {
     if (adminPassword === "123") {
       setIsAdmin(true)
