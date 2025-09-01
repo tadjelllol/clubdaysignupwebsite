@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -10,7 +10,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox"
 import { Users, Smartphone, Laptop, Sparkles, Film, Wrench, Settings, EyeOff } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
-import Image from "next/image"
 
 const initialClubs = [
   {
@@ -66,7 +65,7 @@ export default function ClubRegistration() {
   const [mounted, setMounted] = useState(false)
 
   const [selectedClub, setSelectedClub] = useState("")
-  const [qrCodeUrl, setQrCodeUrl] = useState("")
+  const qrCanvasRef = useRef<HTMLCanvasElement>(null)
   const [formData, setFormData] = useState({
     email: "",
     name: "",
@@ -81,10 +80,14 @@ export default function ClubRegistration() {
     setMounted(true)
     if (typeof window !== "undefined") {
       setIsMobile(window.innerWidth < 768)
-      const url = websiteUrl || window.location.href
-      setQrCodeUrl(`https://api.qrserver.com/v1/create-qr-code/?size=256x256&data=${encodeURIComponent(url)}`)
     }
-  }, [websiteUrl])
+  }, [])
+
+  useEffect(() => {
+    if (mounted) {
+      generateQRCode()
+    }
+  }, [websiteUrl, mounted])
 
   const handleAdminLogin = () => {
     if (adminPassword === "123") {
@@ -260,6 +263,26 @@ export default function ClubRegistration() {
       })
     } finally {
       setIsSubmitting(false)
+    }
+  }
+
+  const generateQRCode = async () => {
+    if (!mounted || !qrCanvasRef.current) return
+
+    try {
+      const QRCode = (await import("qrcode")).default
+      const url = websiteUrl || (typeof window !== "undefined" ? window.location.href : "")
+
+      await QRCode.toCanvas(qrCanvasRef.current, url, {
+        width: 256,
+        margin: 2,
+        color: {
+          dark: "#000000",
+          light: "#FFFFFF",
+        },
+      })
+    } catch (error) {
+      console.error("Failed to generate QR code:", error)
     }
   }
 
@@ -603,32 +626,20 @@ export default function ClubRegistration() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="text-center space-y-4">
-                  {mounted && qrCodeUrl ? (
+                  {mounted ? (
                     <div className="flex justify-center">
-                      <Image
-                        src={qrCodeUrl || "/placeholder.svg"}
-                        alt="QR Code for mobile registration"
-                        width={256}
-                        height={256}
+                      <canvas
+                        ref={qrCanvasRef}
                         className="border-2 border-slate-200 rounded-lg"
-                        onError={(e) => {
-                          const target = e.target as HTMLImageElement
-                          const currentUrl = websiteUrl || (typeof window !== "undefined" ? window.location.href : "")
-
-                          if (target.src.includes("api.qrserver.com")) {
-                            target.src = `https://chart.googleapis.com/chart?chs=256x256&cht=qr&chl=${encodeURIComponent(currentUrl)}`
-                          } else if (target.src.includes("googleapis.com")) {
-                            target.src = "/qr-code-unavailable.png"
-                          }
-                        }}
+                        style={{ maxWidth: "256px", maxHeight: "256px" }}
                       />
                     </div>
                   ) : (
                     <div className="flex justify-center items-center w-64 h-64 bg-gray-100 border-2 border-gray-200 rounded-lg">
-                      <p className="text-gray-500">QR Code Loading...</p>
+                      <p className="text-gray-500">Loading QR Code...</p>
                     </div>
                   )}
-                  <p className="text-sm text-slate-600">Scan with phone camera</p>
+                  <p className="text-sm text-slate-600">Scan with phone camera or visit the URL above</p>
                   <p className="text-xs text-slate-500">
                     Points to:{" "}
                     {mounted ? websiteUrl || (typeof window !== "undefined" ? window.location.href : "") : "Loading..."}
@@ -645,32 +656,20 @@ export default function ClubRegistration() {
               <CardTitle className="text-center text-blue-700">For Laptop Users</CardTitle>
             </CardHeader>
             <CardContent className="text-center space-y-4">
-              {mounted && qrCodeUrl ? (
+              {mounted ? (
                 <div className="flex justify-center">
-                  <Image
-                    src={qrCodeUrl || "/placeholder.svg"}
-                    alt="QR Code for mobile registration"
-                    width={192}
-                    height={192}
+                  <canvas
+                    ref={qrCanvasRef}
                     className="border-2 border-slate-200 rounded-lg"
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement
-                      const currentUrl = websiteUrl || (typeof window !== "undefined" ? window.location.href : "")
-
-                      if (target.src.includes("api.qrserver.com")) {
-                        target.src = `https://chart.googleapis.com/chart?chs=192x192&cht=qr&chl=${encodeURIComponent(currentUrl)}`
-                      } else if (target.src.includes("googleapis.com")) {
-                        target.src = "/qr-code-unavailable.png"
-                      }
-                    }}
+                    style={{ maxWidth: "192px", maxHeight: "192px" }}
                   />
                 </div>
               ) : (
                 <div className="flex justify-center items-center w-48 h-48 bg-gray-100 border-2 border-gray-200 rounded-lg">
-                  <p className="text-gray-500">QR Code Loading...</p>
+                  <p className="text-gray-500">Loading QR Code...</p>
                 </div>
               )}
-              <p className="text-sm text-slate-600">Show this QR code to students without phones</p>
+              <p className="text-sm text-slate-600">Show this to students without phones</p>
             </CardContent>
           </Card>
         )}
