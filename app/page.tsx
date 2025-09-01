@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox"
 import { Users, Smartphone, Laptop, Sparkles, Film, Wrench, Settings, EyeOff } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
+import Image from "next/image"
 
 const initialClubs = [
   {
@@ -17,6 +18,7 @@ const initialClubs = [
     name: "Engineering Club",
     sheetId: "YOUR_ENGINEERING_SHEET_ID",
     icon: Wrench,
+    logo: "https://i.imgur.com/sb1cU8G.png",
     description: "Build, innovate, and engineer the future",
     colors: {
       primary: "bg-sky-500 hover:bg-sky-600 text-white",
@@ -30,6 +32,7 @@ const initialClubs = [
     name: "Cinema Club",
     sheetId: "YOUR_CINEMA_SHEET_ID",
     icon: Film,
+    logo: "https://i.imgur.com/ZQSRaj8.png",
     description: "Lights, camera, action! Create cinematic magic",
     colors: {
       primary: "bg-red-600 hover:bg-red-700 text-white",
@@ -43,6 +46,7 @@ const initialClubs = [
     name: "McRoberts Scholars",
     sheetId: "YOUR_SCHOLARS_SHEET_ID",
     icon: Sparkles,
+    logo: "https://i.imgur.com/Otbfkil.png",
     description: "Excellence in academics and leadership",
     colors: {
       primary: "bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 text-white",
@@ -55,12 +59,13 @@ const initialClubs = [
 
 const grades = ["9", "10", "11", "12"]
 
+const WEBSITE_URL = "https://club-registration-yr9u.onrender.com/"
+
 export default function ClubRegistration() {
   const [isAdmin, setIsAdmin] = useState(false)
   const [adminPassword, setAdminPassword] = useState("")
   const [showAdminLogin, setShowAdminLogin] = useState(false)
   const [clubs, setClubs] = useState(initialClubs)
-  const [websiteUrl, setWebsiteUrl] = useState("")
   const [isMobile, setIsMobile] = useState(false)
   const [mounted, setMounted] = useState(false)
 
@@ -87,7 +92,7 @@ export default function ClubRegistration() {
     if (mounted) {
       generateQRCode()
     }
-  }, [websiteUrl, mounted])
+  }, [mounted])
 
   const handleAdminLogin = () => {
     if (adminPassword === "123") {
@@ -271,9 +276,7 @@ export default function ClubRegistration() {
 
     try {
       const QRCode = (await import("qrcode")).default
-      const url = websiteUrl || (typeof window !== "undefined" ? window.location.href : "")
-
-      await QRCode.toCanvas(qrCanvasRef.current, url, {
+      await QRCode.toCanvas(qrCanvasRef.current, WEBSITE_URL, {
         width: 256,
         margin: 2,
         color: {
@@ -296,25 +299,6 @@ export default function ClubRegistration() {
               Back to Registration
             </Button>
           </div>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Website URL Configuration</CardTitle>
-              <CardDescription>Set the URL that the QR code will point to</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <Label htmlFor="website-url">Website URL</Label>
-                <Input
-                  id="website-url"
-                  placeholder="https://your-deployed-website.vercel.app"
-                  value={websiteUrl}
-                  onChange={(e) => setWebsiteUrl(e.target.value)}
-                />
-              </div>
-              <p className="text-sm text-slate-600">Current QR code points to: {websiteUrl || "Current page URL"}</p>
-            </CardContent>
-          </Card>
 
           <Card>
             <CardHeader>
@@ -348,16 +332,23 @@ export default function ClubRegistration() {
               </div>
 
               <div className="bg-amber-50 p-4 rounded-lg border border-amber-200">
-                <h4 className="font-medium text-amber-800 mb-2">Setup Instructions:</h4>
+                <h4 className="font-medium text-amber-800 mb-2">Sheet Names for This Year:</h4>
                 <ul className="text-sm text-amber-700 space-y-1">
                   <li>
-                    • <strong>Environment Variables Required:</strong> GOOGLE_SERVICE_ACCOUNT_EMAIL, GOOGLE_PRIVATE_KEY
+                    • <strong>Engineering Club Registration 2024/2025</strong>
                   </li>
-                  <li>• Creates new sheets each academic year (e.g., "Engineering Club Registration 2025/2026")</li>
-                  <li>• Keeps previous years' data in separate sheets</li>
-                  <li>• Academic year starts in August</li>
-                  <li>• If auto-creation fails, manually enter Sheet IDs below</li>
+                  <li>
+                    • <strong>Cinema Club Registration 2024/2025</strong>
+                  </li>
+                  <li>
+                    • <strong>McRoberts Scholars Registration 2024/2025</strong>
+                  </li>
                 </ul>
+                <div className="mt-3 pt-3 border-t border-amber-200">
+                  <p className="text-xs text-amber-600">
+                    <strong>Environment Variables Required:</strong> GOOGLE_SERVICE_ACCOUNT_EMAIL, GOOGLE_PRIVATE_KEY
+                  </p>
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -443,10 +434,14 @@ export default function ClubRegistration() {
                   onClick={() => setSelectedClub(club.id)}
                 >
                   <CardContent className="p-6 text-center">
-                    <div
-                      className={`w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r ${club.colors.gradient} flex items-center justify-center`}
-                    >
-                      <Icon className="h-8 w-8 text-white" />
+                    <div className="w-16 h-16 mx-auto mb-4 rounded-full overflow-hidden bg-white shadow-md">
+                      <Image
+                        src={club.logo || "/placeholder.svg"}
+                        alt={`${club.name} logo`}
+                        width={64}
+                        height={64}
+                        className="w-full h-full object-contain"
+                      />
                     </div>
                     <h3 className={`font-bold text-lg mb-2 ${isSelected ? club.colors.text : "text-slate-700"}`}>
                       {club.name}
@@ -481,10 +476,14 @@ export default function ClubRegistration() {
                       onClick={() => setSelectedClub(club.id)}
                     >
                       <CardContent className="p-6 text-center">
-                        <div
-                          className={`w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r ${club.colors.gradient} flex items-center justify-center`}
-                        >
-                          <Icon className="h-8 w-8 text-white" />
+                        <div className="w-16 h-16 mx-auto mb-4 rounded-full overflow-hidden bg-white shadow-md">
+                          <Image
+                            src={club.logo || "/placeholder.svg"}
+                            alt={`${club.name} logo`}
+                            width={64}
+                            height={64}
+                            className="w-full h-full object-contain"
+                          />
                         </div>
                         <h3 className={`font-bold text-lg mb-2 ${isSelected ? club.colors.text : "text-slate-700"}`}>
                           {club.name}
@@ -640,10 +639,7 @@ export default function ClubRegistration() {
                     </div>
                   )}
                   <p className="text-sm text-slate-600">Scan with phone camera or visit the URL above</p>
-                  <p className="text-xs text-slate-500">
-                    Points to:{" "}
-                    {mounted ? websiteUrl || (typeof window !== "undefined" ? window.location.href : "") : "Loading..."}
-                  </p>
+                  <p className="text-xs text-slate-500">Points to: {WEBSITE_URL}</p>
                 </CardContent>
               </Card>
             </div>
