@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Users, Smartphone, Laptop, Sparkles, Film, Wrench, Settings, EyeOff } from "lucide-react"
+import { Users, Smartphone, Laptop, Sparkles, Film, Wrench, Settings, EyeOff, ArrowRight, ExternalLink } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 
 const initialClubs = [
@@ -18,12 +18,13 @@ const initialClubs = [
     sheetId: "YOUR_ENGINEERING_SHEET_ID",
     icon: Wrench,
     logo: "https://i.imgur.com/sb1cU8G.png",
-    description: "Build, innovate, and engineer the future",
+    description: "Engineering tomorrow, today",
     colors: {
-      primary: "bg-sky-500 hover:bg-sky-600 text-white",
-      accent: "border-sky-200 bg-sky-50",
-      text: "text-sky-700",
-      gradient: "from-sky-400 to-blue-500",
+      primary: "bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white shadow-lg shadow-cyan-500/25",
+      accent: "border-cyan-500/20 bg-gradient-to-r from-cyan-950/50 to-blue-950/50 backdrop-blur-sm",
+      text: "text-cyan-400",
+      gradient: "from-cyan-400 via-blue-500 to-indigo-600",
+      glow: "shadow-cyan-500/50",
     },
   },
   {
@@ -32,12 +33,13 @@ const initialClubs = [
     sheetId: "YOUR_CINEMA_SHEET_ID",
     icon: Film,
     logo: "https://i.imgur.com/ZQSRaj8.png",
-    description: "Lights, camera, action! Create cinematic magic",
+    description: "Celebrating the art of film",
     colors: {
-      primary: "bg-red-600 hover:bg-red-700 text-white",
-      accent: "border-red-200 bg-red-50",
-      text: "text-red-700",
-      gradient: "from-red-500 to-black",
+      primary: "bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white shadow-lg shadow-red-500/25",
+      accent: "border-red-500/20 bg-gradient-to-r from-red-950/50 to-pink-950/50 backdrop-blur-sm",
+      text: "text-red-400",
+      gradient: "from-red-400 via-pink-500 to-rose-600",
+      glow: "shadow-red-500/50",
     },
   },
   {
@@ -46,12 +48,13 @@ const initialClubs = [
     sheetId: "YOUR_SCHOLARS_SHEET_ID",
     icon: Sparkles,
     logo: "https://i.imgur.com/Otbfkil.png",
-    description: "Excellence in academics and leadership",
+    description: "Empowering students with scholarship opportunities",
     colors: {
-      primary: "bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 text-white",
-      accent: "border-emerald-200 bg-gradient-to-r from-emerald-50 to-blue-50",
-      text: "text-emerald-700",
-      gradient: "from-emerald-500 via-yellow-400 to-blue-500",
+      primary: "bg-gradient-to-r from-emerald-500 via-yellow-400 to-blue-600 hover:from-emerald-600 hover:via-yellow-500 hover:to-blue-700 text-white shadow-lg shadow-emerald-500/25",
+      accent: "border-emerald-500/20 bg-gradient-to-r from-emerald-950/50 via-yellow-950/50 to-blue-950/50 backdrop-blur-sm",
+      text: "text-emerald-400",
+      gradient: "from-emerald-400 via-yellow-400 to-blue-500",
+      glow: "shadow-emerald-500/50",
     },
   },
 ]
@@ -296,49 +299,59 @@ export default function ClubRegistration() {
 
   if (isAdmin) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4">
-        <div className="mx-auto max-w-4xl space-y-8">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-black relative overflow-hidden">
+        {/* Grid Background */}
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:50px_50px]"></div>
+        
+        <div className="mx-auto max-w-4xl space-y-8 p-4 relative z-10">
           <div className="flex justify-between items-center">
-            <h1 className="text-3xl font-bold text-slate-800">Admin Panel</h1>
-            <Button onClick={() => setIsAdmin(false)} variant="outline">
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+              Admin Panel
+            </h1>
+            <Button 
+              onClick={() => setIsAdmin(false)} 
+              variant="outline"
+              className="border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10 hover:border-cyan-400/50"
+            >
               Back to Registration
             </Button>
           </div>
 
-          <Card>
+          <Card className="border-cyan-500/20 bg-gradient-to-r from-slate-900/80 to-slate-800/80 backdrop-blur-sm shadow-xl shadow-cyan-500/10">
             <CardHeader>
-              <CardTitle>Google Sheets Configuration</CardTitle>
-              <CardDescription>Set up your Google Sheet IDs for each club</CardDescription>
+              <CardTitle className="text-cyan-400">Google Sheets Configuration</CardTitle>
+              <CardDescription className="text-slate-300">Set up your Google Sheet IDs for each club</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="flex justify-between items-center">
                 <div>
-                  <h4 className="font-medium text-slate-800">Auto-Create Sheets</h4>
-                  <p className="text-sm text-slate-600">Automatically create Google Sheets with proper headers</p>
+                  <h4 className="font-medium text-slate-200">Auto-Create Sheets</h4>
+                  <p className="text-sm text-slate-400">Automatically create Google Sheets with proper headers</p>
                 </div>
-                <Button onClick={createAllSheets} className="bg-green-600 hover:bg-green-700">
+                <Button onClick={createAllSheets} className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 shadow-lg shadow-green-500/25">
                   Create All Sheets
                 </Button>
               </div>
 
-              <div className="border-t pt-4">
-                <h4 className="font-medium text-slate-800 mb-4">Manual Sheet ID Entry</h4>
+              <div className="border-t border-slate-700 pt-4">
+                <h4 className="font-medium text-slate-200 mb-4">Manual Sheet ID Entry</h4>
                 {clubs.map((club) => (
                   <div key={club.id} className="space-y-2 mb-4">
-                    <Label htmlFor={`${club.id}-sheet`}>{club.name} Sheet ID</Label>
+                    <Label htmlFor={`${club.id}-sheet`} className="text-slate-300">{club.name} Sheet ID</Label>
                     <Input
                       id={`${club.id}-sheet`}
                       placeholder="Enter Google Sheet ID"
                       value={club.sheetId}
                       onChange={(e) => updateClubSheetId(club.id, e.target.value)}
+                      className="bg-slate-800/50 border-slate-600 text-slate-200 placeholder:text-slate-500 focus:border-cyan-500 focus:ring-cyan-500/20"
                     />
                   </div>
                 ))}
               </div>
 
-              <div className="bg-amber-50 p-4 rounded-lg border border-amber-200">
-                <h4 className="font-medium text-amber-800 mb-2">Sheet Names for This Year:</h4>
-                <ul className="text-sm text-amber-700 space-y-1">
+              <div className="bg-gradient-to-r from-amber-950/50 to-orange-950/50 p-4 rounded-lg border border-amber-500/20 backdrop-blur-sm">
+                <h4 className="font-medium text-amber-300 mb-2">Sheet Names for This Year:</h4>
+                <ul className="text-sm text-amber-200 space-y-1">
                   <li>
                     • <strong>Engineering Club Registration 2024/2025</strong>
                   </li>
@@ -349,8 +362,8 @@ export default function ClubRegistration() {
                     • <strong>McRoberts Scholars Registration 2024/2025</strong>
                   </li>
                 </ul>
-                <div className="mt-3 pt-3 border-t border-amber-200">
-                  <p className="text-xs text-amber-600">
+                <div className="mt-3 pt-3 border-t border-amber-500/20">
+                  <p className="text-xs text-amber-300">
                     <strong>Environment Variables Required:</strong> GOOGLE_SERVICE_ACCOUNT_EMAIL, GOOGLE_PRIVATE_KEY
                   </p>
                 </div>
@@ -363,24 +376,55 @@ export default function ClubRegistration() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4">
-      <div className="mx-auto max-w-6xl space-y-8">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-black relative overflow-hidden">
+      {/* Grid Background */}
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:50px_50px]"></div>
+      
+      {/* Floating Orbs */}
+      <div className="absolute top-20 left-10 w-72 h-72 bg-cyan-500/10 rounded-full blur-3xl"></div>
+      <div className="absolute bottom-20 right-10 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl"></div>
+      <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl"></div>
+
+      <div className="mx-auto max-w-6xl space-y-8 p-4 relative z-10">
+        {/* Fixed QR Code - Always Visible */}
+        <div className="fixed top-4 left-4 z-50">
+          <Card className="bg-gradient-to-r from-slate-900/90 to-slate-800/90 backdrop-blur-md border-cyan-500/20 shadow-xl shadow-cyan-500/20">
+            <CardContent className="p-4 text-center space-y-3">
+              <h4 className="text-xs font-medium text-cyan-400 uppercase tracking-wider">Quick Access</h4>
+              {mounted ? (
+                <div className="flex justify-center">
+                  <canvas
+                    ref={qrCanvasRef}
+                    className="border border-cyan-500/30 rounded-lg shadow-lg shadow-cyan-500/20"
+                    style={{ maxWidth: "120px", maxHeight: "120px" }}
+                  />
+                </div>
+              ) : (
+                <div className="flex justify-center items-center w-30 h-30 bg-slate-800 border border-cyan-500/30 rounded-lg">
+                  <p className="text-xs text-slate-400">Loading...</p>
+                </div>
+              )}
+              <p className="text-xs text-slate-400">Scan to register</p>
+            </CardContent>
+          </Card>
+        </div>
+
         <div className="fixed top-4 right-4 z-50">
           {!showAdminLogin ? (
             <Button
               onClick={() => setShowAdminLogin(true)}
               variant="ghost"
               size="sm"
-              className="bg-white/80 backdrop-blur-sm"
+              className="bg-slate-900/80 backdrop-blur-md border border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10 hover:border-cyan-400/50 shadow-lg shadow-cyan-500/20"
             >
               <Settings className="h-4 w-4" />
             </Button>
           ) : (
-            <Card className="w-64">
+            <Card className="w-64 bg-gradient-to-r from-slate-900/90 to-slate-800/90 backdrop-blur-md border-cyan-500/20 shadow-xl shadow-cyan-500/20">
               <CardContent className="p-4 space-y-3">
                 <div className="flex items-center justify-between">
-                  <Label>Admin Login</Label>
-                  <Button onClick={() => setShowAdminLogin(false)} variant="ghost" size="sm">
+                  <Label className="text-cyan-400">Admin Login</Label>
+                  <Button onClick={() => setShowAdminLogin(false)} variant="ghost" size="sm" className="text-slate-400 hover:text-cyan-400">
                     <EyeOff className="h-4 w-4" />
                   </Button>
                 </div>
@@ -390,8 +434,9 @@ export default function ClubRegistration() {
                   value={adminPassword}
                   onChange={(e) => setAdminPassword(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleAdminLogin()}
+                  className="bg-slate-800/50 border-slate-600 text-slate-200 placeholder:text-slate-500 focus:border-cyan-500 focus:ring-cyan-500/20"
                 />
-                <Button onClick={handleAdminLogin} size="sm" className="w-full">
+                <Button onClick={handleAdminLogin} size="sm" className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 shadow-lg shadow-cyan-500/25">
                   Login
                 </Button>
               </CardContent>
@@ -399,25 +444,31 @@ export default function ClubRegistration() {
           )}
         </div>
 
-        <div className="text-center space-y-6">
+        <div className="text-center space-y-8 pt-16">
           <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-purple-600 to-red-600 rounded-2xl blur-xl opacity-20"></div>
-            <div className="relative bg-white rounded-2xl p-8 shadow-lg border">
-              <div className="flex items-center justify-center gap-3 mb-4">
-                <Users className="h-10 w-10 text-blue-600" />
-                <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            <div className="absolute inset-0 bg-gradient-to-r from-cyan-600 via-blue-600 to-purple-600 rounded-3xl blur-3xl opacity-30"></div>
+            <div className="relative bg-gradient-to-r from-slate-900/80 to-slate-800/80 backdrop-blur-md rounded-3xl p-12 shadow-2xl border border-slate-700/50">
+              <div className="flex items-center justify-center gap-4 mb-6">
+                <div className="p-3 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-2xl shadow-lg shadow-cyan-500/25">
+                  <Users className="h-12 w-12 text-white" />
+                </div>
+                <h1 className="text-6xl font-bold bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 bg-clip-text text-transparent">
                   Club Registration
                 </h1>
               </div>
-              <p className="text-slate-600 text-xl font-medium">Join the excitement of Clubs Day!</p>
+              <p className="text-slate-300 text-2xl font-medium mb-8">Join the excitement of Clubs Day!</p>
 
-              <div className="flex items-center justify-center gap-8 mt-6 text-sm text-slate-500">
+              <div className="flex items-center justify-center gap-8 text-sm text-slate-400">
                 <div className="flex items-center gap-2">
-                  <Smartphone className="h-5 w-5 text-green-500" />
+                  <div className="p-2 bg-green-500/20 rounded-lg">
+                    <Smartphone className="h-5 w-5 text-green-400" />
+                  </div>
                   <span>Scan QR code on mobile</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Laptop className="h-5 w-5 text-blue-500" />
+                  <div className="p-2 bg-blue-500/20 rounded-lg">
+                    <Laptop className="h-5 w-5 text-blue-400" />
+                  </div>
                   <span>Or use this laptop</span>
                 </div>
               </div>
@@ -433,25 +484,27 @@ export default function ClubRegistration() {
               return (
                 <Card
                   key={club.id}
-                  className={`cursor-pointer transition-all duration-300 hover:scale-105 ${
-                    isSelected ? `ring-2 ring-offset-2 ${club.colors.accent} shadow-lg` : "hover:shadow-md"
-                  }`}
+                  className={`cursor-pointer transition-all duration-500 hover:scale-105 border-2 ${
+                    isSelected 
+                      ? `ring-2 ring-offset-2 ring-offset-slate-900 ${club.colors.accent} shadow-2xl ${club.colors.glow}` 
+                      : "border-slate-700/50 hover:border-slate-600/50 hover:shadow-xl"
+                  } bg-gradient-to-r from-slate-900/80 to-slate-800/80 backdrop-blur-sm`}
                   onClick={() => setSelectedClub(club.id)}
                 >
                   <CardContent className="p-6 text-center">
-                    <div className="w-16 h-16 mx-auto mb-4 rounded-full overflow-hidden bg-white shadow-md">
+                    <div className="w-20 h-20 mx-auto mb-4 rounded-2xl overflow-hidden bg-white shadow-lg shadow-slate-900/50">
                       <img
                         src={club.logo || "/placeholder.svg"}
                         alt={`${club.name} logo`}
-                        className="w-full h-full object-contain"
+                        className="w-full h-full object-contain p-2"
                       />
                     </div>
-                    <h3 className={`font-bold text-lg mb-2 ${isSelected ? club.colors.text : "text-slate-700"}`}>
+                    <h3 className={`font-bold text-xl mb-2 ${isSelected ? club.colors.text : "text-slate-200"}`}>
                       {club.name}
                     </h3>
-                    <p className="text-sm text-slate-500">{club.description}</p>
+                    <p className="text-sm text-slate-400">{club.description}</p>
                     {isSelected && (
-                      <div className="mt-3 px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">
+                      <div className="mt-3 px-3 py-1 bg-gradient-to-r from-green-500/20 to-emerald-500/20 text-green-400 rounded-full text-xs font-medium border border-green-500/30">
                         Selected ✓
                       </div>
                     )}
@@ -473,25 +526,27 @@ export default function ClubRegistration() {
                   return (
                     <Card
                       key={club.id}
-                      className={`cursor-pointer transition-all duration-300 hover:scale-105 ${
-                        isSelected ? `ring-2 ring-offset-2 ${club.colors.accent} shadow-lg` : "hover:shadow-md"
-                      }`}
+                      className={`cursor-pointer transition-all duration-500 hover:scale-105 border-2 ${
+                        isSelected 
+                          ? `ring-2 ring-offset-2 ring-offset-slate-900 ${club.colors.accent} shadow-2xl ${club.colors.glow}` 
+                          : "border-slate-700/50 hover:border-slate-600/50 hover:shadow-xl"
+                      } bg-gradient-to-r from-slate-900/80 to-slate-800/80 backdrop-blur-sm`}
                       onClick={() => setSelectedClub(club.id)}
                     >
                       <CardContent className="p-6 text-center">
-                        <div className="w-16 h-16 mx-auto mb-4 rounded-full overflow-hidden bg-white shadow-md">
+                        <div className="w-20 h-20 mx-auto mb-4 rounded-2xl overflow-hidden bg-white shadow-lg shadow-slate-900/50">
                           <img
                             src={club.logo || "/placeholder.svg"}
                             alt={`${club.name} logo`}
-                            className="w-full h-full object-contain"
+                            className="w-full h-full object-contain p-2"
                           />
                         </div>
-                        <h3 className={`font-bold text-lg mb-2 ${isSelected ? club.colors.text : "text-slate-700"}`}>
+                        <h3 className={`font-bold text-xl mb-2 ${isSelected ? club.colors.text : "text-slate-200"}`}>
                           {club.name}
                         </h3>
-                        <p className="text-sm text-slate-500">{club.description}</p>
+                        <p className="text-sm text-slate-400">{club.description}</p>
                         {isSelected && (
-                          <div className="mt-3 px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">
+                          <div className="mt-3 px-3 py-1 bg-gradient-to-r from-green-500/20 to-emerald-500/20 text-green-400 rounded-full text-xs font-medium border border-green-500/30">
                             Selected ✓
                           </div>
                         )}
@@ -503,13 +558,13 @@ export default function ClubRegistration() {
             )}
 
             {selectedClub && (
-              <Card className={`${currentClub?.colors.accent} shadow-lg`}>
+              <Card className={`${currentClub?.colors.accent} shadow-2xl ${currentClub?.colors.glow} backdrop-blur-sm`}>
                 <CardHeader>
-                  <CardTitle className={`text-2xl ${currentClub?.colors.text} flex items-center gap-2`}>
-                    {currentClub && <currentClub.icon className="h-6 w-6" />}
+                  <CardTitle className={`text-3xl ${currentClub?.colors.text} flex items-center gap-3`}>
+                    {currentClub && <currentClub.icon className="h-8 w-8" />}
                     Registration Details
                   </CardTitle>
-                  <CardDescription className="text-base">
+                  <CardDescription className="text-lg text-slate-300">
                     Fill out your information to join {clubs.find((c) => c.id === selectedClub)?.name}
                   </CardDescription>
                 </CardHeader>
@@ -517,7 +572,7 @@ export default function ClubRegistration() {
                   <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="grid gap-6 md:grid-cols-2">
                       <div className="space-y-2">
-                        <Label htmlFor="name" className="text-base font-medium">
+                        <Label htmlFor="name" className="text-base font-medium text-slate-200">
                           Full Name *
                         </Label>
                         <Input
@@ -525,13 +580,13 @@ export default function ClubRegistration() {
                           placeholder="First and Last Name"
                           value={formData.name}
                           onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
-                          className="h-12"
+                          className="h-12 bg-slate-800/50 border-slate-600 text-slate-200 placeholder:text-slate-500 focus:border-cyan-500 focus:ring-cyan-500/20"
                           required
                         />
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="grade" className="text-base font-medium">
+                        <Label htmlFor="grade" className="text-base font-medium text-slate-200">
                           Grade *
                         </Label>
                         <Select
@@ -539,12 +594,12 @@ export default function ClubRegistration() {
                           onValueChange={(value) => setFormData((prev) => ({ ...prev, grade: value }))}
                           required
                         >
-                          <SelectTrigger className="h-12">
+                          <SelectTrigger className="h-12 bg-slate-800/50 border-slate-600 text-slate-200 focus:border-cyan-500 focus:ring-cyan-500/20">
                             <SelectValue placeholder="Select grade" />
                           </SelectTrigger>
-                          <SelectContent>
+                          <SelectContent className="bg-slate-800 border-slate-600">
                             {grades.map((grade) => (
-                              <SelectItem key={grade} value={grade}>
+                              <SelectItem key={grade} value={grade} className="text-slate-200 hover:bg-slate-700">
                                 Grade {grade}
                               </SelectItem>
                             ))}
@@ -554,7 +609,7 @@ export default function ClubRegistration() {
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="email" className="text-base font-medium">
+                      <Label htmlFor="email" className="text-base font-medium text-slate-200">
                         Email Address *
                       </Label>
                       <Input
@@ -563,13 +618,13 @@ export default function ClubRegistration() {
                         placeholder="your.email@school.edu"
                         value={formData.email}
                         onChange={(e) => setFormData((prev) => ({ ...prev, email: e.target.value }))}
-                        className="h-12"
+                        className="h-12 bg-slate-800/50 border-slate-600 text-slate-200 placeholder:text-slate-500 focus:border-cyan-500 focus:ring-cyan-500/20"
                         required
                       />
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="discord" className="text-base font-medium">
+                      <Label htmlFor="discord" className="text-base font-medium text-slate-200">
                         Discord Username (Optional)
                       </Label>
                       <Input
@@ -577,26 +632,27 @@ export default function ClubRegistration() {
                         placeholder="username#1234"
                         value={formData.discord}
                         onChange={(e) => setFormData((prev) => ({ ...prev, discord: e.target.value }))}
-                        className="h-12"
+                        className="h-12 bg-slate-800/50 border-slate-600 text-slate-200 placeholder:text-slate-500 focus:border-cyan-500 focus:ring-cyan-500/20"
                       />
                     </div>
 
-                    <div className="flex items-start space-x-3 p-4 bg-white rounded-lg border">
+                    <div className="flex items-start space-x-3 p-4 bg-gradient-to-r from-slate-800/50 to-slate-700/50 rounded-xl border border-slate-600/50 backdrop-blur-sm">
                       <Checkbox
                         id="photo-consent"
                         checked={formData.photoConsent}
                         onCheckedChange={(checked) =>
                           setFormData((prev) => ({ ...prev, photoConsent: checked as boolean }))
                         }
+                        className="border-slate-600 data-[state=checked]:bg-cyan-500 data-[state=checked]:border-cyan-500"
                       />
                       <div className="grid gap-2 leading-none">
                         <Label
                           htmlFor="photo-consent"
-                          className="text-base font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                          className="text-base font-medium leading-none text-slate-200 peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                         >
                           Photo Consent
                         </Label>
-                        <p className="text-sm text-slate-600">
+                        <p className="text-sm text-slate-300">
                           I agree to being photographed during club activities. These photos may be used in the
                           &quot;yearbook&quot; and club media.
                         </p>
@@ -605,10 +661,17 @@ export default function ClubRegistration() {
 
                     <Button
                       type="submit"
-                      className={`w-full h-14 text-lg font-semibold ${currentClub?.colors.primary || "bg-primary hover:bg-primary/90"}`}
+                      className={`w-full h-16 text-xl font-semibold ${currentClub?.colors.primary || "bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 shadow-lg shadow-cyan-500/25"} rounded-2xl transition-all duration-300 hover:scale-105`}
                       disabled={isSubmitting}
                     >
-                      {isSubmitting ? "Registering..." : `Join ${currentClub?.name} Now!`}
+                      {isSubmitting ? (
+                        "Registering..."
+                      ) : (
+                        <span className="flex items-center gap-2">
+                          Join {currentClub?.name} Now!
+                          <ArrowRight className="h-5 w-5" />
+                        </span>
+                      )}
                     </Button>
                   </form>
                 </CardContent>
@@ -618,10 +681,10 @@ export default function ClubRegistration() {
 
           {!isMobile && (
             <div className="space-y-6">
-              <Card className="bg-white shadow-lg sticky top-4">
+              <Card className="bg-gradient-to-r from-slate-900/80 to-slate-800/80 backdrop-blur-md shadow-2xl border-slate-700/50 sticky top-4">
                 <CardHeader>
-                  <CardTitle className="text-center text-blue-700">Mobile Registration</CardTitle>
-                  <CardDescription className="text-center">
+                  <CardTitle className="text-center text-cyan-400 text-2xl">Mobile Registration</CardTitle>
+                  <CardDescription className="text-center text-slate-300 text-base">
                     Students can scan this QR code to register on their phones
                   </CardDescription>
                 </CardHeader>
@@ -630,17 +693,28 @@ export default function ClubRegistration() {
                     <div className="flex justify-center">
                       <canvas
                         ref={qrCanvasRef}
-                        className="border-2 border-slate-200 rounded-lg"
+                        className="border-2 border-cyan-500/30 rounded-xl shadow-2xl shadow-cyan-500/20"
                         style={{ maxWidth: "256px", maxHeight: "256px" }}
                       />
                     </div>
                   ) : (
-                    <div className="flex justify-center items-center w-64 h-64 bg-gray-100 border-2 border-gray-200 rounded-lg">
-                      <p className="text-gray-500">Loading QR Code...</p>
+                    <div className="flex justify-center items-center w-64 h-64 bg-slate-800 border-2 border-slate-600 rounded-xl">
+                      <p className="text-slate-400">Loading QR Code...</p>
                     </div>
                   )}
-                  <p className="text-sm text-slate-600">Scan with phone camera or visit the URL above</p>
-                  <p className="text-xs text-slate-500">Points to: {WEBSITE_URL}</p>
+                  <p className="text-sm text-slate-300">Scan with phone camera or visit the URL above</p>
+                  <div className="flex items-center justify-center gap-2 text-xs text-slate-400">
+                    <span>Points to:</span>
+                    <a 
+                      href={WEBSITE_URL} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-cyan-400 hover:text-cyan-300 flex items-center gap-1"
+                    >
+                      {WEBSITE_URL}
+                      <ExternalLink className="h-3 w-3" />
+                    </a>
+                  </div>
                 </CardContent>
               </Card>
             </div>
@@ -648,25 +722,25 @@ export default function ClubRegistration() {
         </div>
 
         {isMobile && (
-          <Card className="bg-white shadow-lg">
+          <Card className="bg-gradient-to-r from-slate-900/80 to-slate-800/80 backdrop-blur-md shadow-2xl border-slate-700/50">
             <CardHeader>
-              <CardTitle className="text-center text-blue-700">For Laptop Users</CardTitle>
+              <CardTitle className="text-center text-cyan-400 text-xl">For Laptop Users</CardTitle>
             </CardHeader>
             <CardContent className="text-center space-y-4">
               {mounted ? (
                 <div className="flex justify-center">
                   <canvas
                     ref={qrCanvasRef}
-                    className="border-2 border-slate-200 rounded-lg"
+                    className="border-2 border-cyan-500/30 rounded-xl shadow-2xl shadow-cyan-500/20"
                     style={{ maxWidth: "192px", maxHeight: "192px" }}
                   />
                 </div>
               ) : (
-                <div className="flex justify-center items-center w-48 h-48 bg-gray-100 border-2 border-gray-200 rounded-lg">
-                  <p className="text-gray-500">Loading QR Code...</p>
+                <div className="flex justify-center items-center w-48 h-48 bg-slate-800 border-2 border-slate-600 rounded-xl">
+                  <p className="text-slate-400">Loading QR Code...</p>
                 </div>
               )}
-              <p className="text-sm text-slate-600">Show this to students without phones</p>
+              <p className="text-sm text-slate-300">Show this to students without phones</p>
             </CardContent>
           </Card>
         )}
