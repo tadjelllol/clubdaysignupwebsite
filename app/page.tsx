@@ -8,7 +8,18 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Users, Smartphone, Laptop, Sparkles, Film, Wrench, Settings, EyeOff, ArrowRight, ExternalLink } from "lucide-react"
+import {
+  Users,
+  Smartphone,
+  Laptop,
+  Sparkles,
+  Film,
+  Wrench,
+  Settings,
+  EyeOff,
+  ArrowRight,
+  ExternalLink,
+} from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 
 const initialClubs = [
@@ -20,7 +31,8 @@ const initialClubs = [
     logo: "https://i.imgur.com/sb1cU8G.png",
     description: "Engineering tomorrow, today",
     colors: {
-      primary: "bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white shadow-lg shadow-cyan-500/25",
+      primary:
+        "bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white shadow-lg shadow-cyan-500/25",
       accent: "border-cyan-500/20 bg-gradient-to-r from-cyan-950/50 to-blue-950/50 backdrop-blur-sm",
       text: "text-cyan-400",
       gradient: "from-cyan-400 via-blue-500 to-indigo-600",
@@ -35,7 +47,8 @@ const initialClubs = [
     logo: "https://i.imgur.com/ZQSRaj8.png",
     description: "Celebrating the art of film",
     colors: {
-      primary: "bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white shadow-lg shadow-red-500/25",
+      primary:
+        "bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white shadow-lg shadow-red-500/25",
       accent: "border-red-500/20 bg-gradient-to-r from-red-950/50 to-pink-950/50 backdrop-blur-sm",
       text: "text-red-400",
       gradient: "from-red-400 via-pink-500 to-rose-600",
@@ -50,8 +63,10 @@ const initialClubs = [
     logo: "https://i.imgur.com/Otbfkil.png",
     description: "Empowering students with scholarship opportunities",
     colors: {
-      primary: "bg-gradient-to-r from-emerald-500 via-yellow-400 to-blue-600 hover:from-emerald-600 hover:via-yellow-500 hover:to-blue-700 text-white shadow-lg shadow-emerald-500/25",
-      accent: "border-emerald-500/20 bg-gradient-to-r from-emerald-950/50 via-yellow-950/50 to-blue-950/50 backdrop-blur-sm",
+      primary:
+        "bg-gradient-to-r from-emerald-500 via-yellow-400 to-blue-600 hover:from-emerald-600 hover:via-yellow-500 hover:to-blue-700 text-white shadow-lg shadow-emerald-500/25",
+      accent:
+        "border-emerald-500/20 bg-gradient-to-r from-emerald-950/50 via-yellow-950/50 to-blue-950/50 backdrop-blur-sm",
       text: "text-emerald-400",
       gradient: "from-emerald-400 via-yellow-400 to-blue-500",
       glow: "shadow-emerald-500/50",
@@ -302,14 +317,14 @@ export default function ClubRegistration() {
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-black relative overflow-hidden">
         {/* Grid Background */}
         <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:50px_50px]"></div>
-        
+
         <div className="mx-auto max-w-4xl space-y-8 p-4 relative z-10">
           <div className="flex justify-between items-center">
             <h1 className="text-4xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
               Admin Panel
             </h1>
-            <Button 
-              onClick={() => setIsAdmin(false)} 
+            <Button
+              onClick={() => setIsAdmin(false)}
               variant="outline"
               className="border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10 hover:border-cyan-400/50"
             >
@@ -328,7 +343,10 @@ export default function ClubRegistration() {
                   <h4 className="font-medium text-slate-200">Auto-Create Sheets</h4>
                   <p className="text-sm text-slate-400">Automatically create Google Sheets with proper headers</p>
                 </div>
-                <Button onClick={createAllSheets} className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 shadow-lg shadow-green-500/25">
+                <Button
+                  onClick={createAllSheets}
+                  className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 shadow-lg shadow-green-500/25"
+                >
                   Create All Sheets
                 </Button>
               </div>
@@ -337,7 +355,9 @@ export default function ClubRegistration() {
                 <h4 className="font-medium text-slate-200 mb-4">Manual Sheet ID Entry</h4>
                 {clubs.map((club) => (
                   <div key={club.id} className="space-y-2 mb-4">
-                    <Label htmlFor={`${club.id}-sheet`} className="text-slate-300">{club.name} Sheet ID</Label>
+                    <Label htmlFor={`${club.id}-sheet`} className="text-slate-300">
+                      {club.name} Sheet ID
+                    </Label>
                     <Input
                       id={`${club.id}-sheet`}
                       placeholder="Enter Google Sheet ID"
@@ -379,70 +399,77 @@ export default function ClubRegistration() {
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-black relative overflow-hidden">
       {/* Grid Background */}
       <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:50px_50px]"></div>
-      
+
       {/* Floating Orbs */}
       <div className="absolute top-20 left-10 w-72 h-72 bg-cyan-500/10 rounded-full blur-3xl"></div>
       <div className="absolute bottom-20 right-10 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl"></div>
       <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl"></div>
 
-      <div className="mx-auto max-w-6xl space-y-8 p-4 relative z-10">
-        {/* Fixed QR Code - Always Visible */}
-        <div className="fixed top-4 left-4 z-50">
-          <Card className="bg-gradient-to-r from-slate-900/90 to-slate-800/90 backdrop-blur-md border-cyan-500/20 shadow-xl shadow-cyan-500/20">
-            <CardContent className="p-4 text-center space-y-3">
-              <h4 className="text-xs font-medium text-cyan-400 uppercase tracking-wider">Quick Access</h4>
-              {mounted ? (
-                <div className="flex justify-center">
-                  <canvas
-                    ref={qrCanvasRef}
-                    className="border border-cyan-500/30 rounded-lg shadow-lg shadow-cyan-500/20"
-                    style={{ maxWidth: "120px", maxHeight: "120px" }}
-                  />
-                </div>
-              ) : (
-                <div className="flex justify-center items-center w-30 h-30 bg-slate-800 border border-cyan-500/30 rounded-lg">
-                  <p className="text-xs text-slate-400">Loading...</p>
-                </div>
-              )}
-              <p className="text-xs text-slate-400">Scan to register</p>
+      <div className="fixed top-4 right-4 z-50">
+        {!showAdminLogin ? (
+          <Button
+            onClick={() => setShowAdminLogin(true)}
+            variant="ghost"
+            size="sm"
+            className="bg-slate-800/80 backdrop-blur-sm shadow-lg hover:bg-slate-700/80 text-slate-300 hover:text-white border border-slate-600/50"
+          >
+            <Settings className="h-4 w-4" />
+          </Button>
+        ) : (
+          <Card className="w-64 shadow-xl bg-slate-800/90 backdrop-blur-sm border-slate-600/50">
+            <CardContent className="p-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <Label className="text-slate-200">Admin Login</Label>
+                <Button
+                  onClick={() => setShowAdminLogin(false)}
+                  variant="ghost"
+                  size="sm"
+                  className="text-slate-400 hover:text-slate-200"
+                >
+                  <EyeOff className="h-4 w-4" />
+                </Button>
+              </div>
+              <Input
+                type="password"
+                placeholder="Password"
+                value={adminPassword}
+                onChange={(e) => setAdminPassword(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleAdminLogin()}
+                className="bg-slate-700/50 border-slate-600 text-slate-200 placeholder:text-slate-400"
+              />
+              <Button onClick={handleAdminLogin} size="sm" className="w-full bg-cyan-600 hover:bg-cyan-700">
+                Login
+              </Button>
             </CardContent>
           </Card>
-        </div>
+        )}
+      </div>
 
-        <div className="fixed top-4 right-4 z-50">
-          {!showAdminLogin ? (
-            <Button
-              onClick={() => setShowAdminLogin(true)}
-              variant="ghost"
-              size="sm"
-              className="bg-slate-900/80 backdrop-blur-md border border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10 hover:border-cyan-400/50 shadow-lg shadow-cyan-500/20"
-            >
-              <Settings className="h-4 w-4" />
-            </Button>
-          ) : (
-            <Card className="w-64 bg-gradient-to-r from-slate-900/90 to-slate-800/90 backdrop-blur-md border-cyan-500/20 shadow-xl shadow-cyan-500/20">
-              <CardContent className="p-4 space-y-3">
-                <div className="flex items-center justify-between">
-                  <Label className="text-cyan-400">Admin Login</Label>
-                  <Button onClick={() => setShowAdminLogin(false)} variant="ghost" size="sm" className="text-slate-400 hover:text-cyan-400">
-                    <EyeOff className="h-4 w-4" />
-                  </Button>
+      <div className="mx-auto max-w-6xl space-y-8 p-4 relative z-10">
+        {/* Mobile QR Code - Fixed at top, never moves */}
+        {isMobile && (
+          <div className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-slate-900/95 to-slate-800/95 backdrop-blur-md border-b border-slate-700/50 px-4 py-3">
+            <div className="flex items-center justify-center">
+              <div className="flex items-center gap-3">
+                {mounted ? (
+                  <canvas
+                    ref={qrCanvasRef}
+                    className="border-2 border-cyan-500/30 rounded-lg shadow-lg shadow-cyan-500/20 bg-white"
+                    style={{ width: "60px", height: "60px" }}
+                  />
+                ) : (
+                  <div className="w-15 h-15 bg-slate-800 border-2 border-cyan-500/30 rounded-lg flex items-center justify-center">
+                    <p className="text-xs text-slate-400">Loading...</p>
+                  </div>
+                )}
+                <div>
+                  <h4 className="text-sm font-medium text-cyan-400">Scan to Register</h4>
+                  <p className="text-xs text-slate-400">QR Code never moves</p>
                 </div>
-                <Input
-                  type="password"
-                  placeholder="Password"
-                  value={adminPassword}
-                  onChange={(e) => setAdminPassword(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && handleAdminLogin()}
-                  className="bg-slate-800/50 border-slate-600 text-slate-200 placeholder:text-slate-500 focus:border-cyan-500 focus:ring-cyan-500/20"
-                />
-                <Button onClick={handleAdminLogin} size="sm" className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 shadow-lg shadow-cyan-500/25">
-                  Login
-                </Button>
-              </CardContent>
-            </Card>
-          )}
-        </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className="text-center space-y-8 pt-16">
           <div className="relative">
@@ -452,7 +479,7 @@ export default function ClubRegistration() {
                 <div className="p-3 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-2xl shadow-lg shadow-cyan-500/25">
                   <Users className="h-12 w-12 text-white" />
                 </div>
-                <h1 className="text-6xl font-bold bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 bg-clip-text text-transparent">
+                <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 bg-clip-text text-transparent leading-tight">
                   Club Registration
                 </h1>
               </div>
@@ -485,14 +512,16 @@ export default function ClubRegistration() {
                 <Card
                   key={club.id}
                   className={`cursor-pointer transition-all duration-500 hover:scale-105 border-2 ${
-                    isSelected 
-                      ? `ring-2 ring-offset-2 ring-offset-slate-900 ${club.colors.accent} shadow-2xl ${club.colors.glow}` 
+                    isSelected
+                      ? `ring-2 ring-offset-2 ring-offset-slate-900 ${club.colors.accent} shadow-2xl ${club.colors.glow}`
                       : "border-slate-700/50 hover:border-slate-600/50 hover:shadow-xl"
                   } bg-gradient-to-r from-slate-900/80 to-slate-800/80 backdrop-blur-sm`}
                   onClick={() => setSelectedClub(club.id)}
                 >
                   <CardContent className="p-6 text-center">
-                    <div className="w-20 h-20 mx-auto mb-4 rounded-2xl overflow-hidden bg-white shadow-lg shadow-slate-900/50">
+                    <div
+                      className={`w-20 h-20 mx-auto mb-4 rounded-2xl overflow-hidden ${club.id === "cinema" ? "bg-[#851b1b]" : "bg-white"} shadow-lg shadow-slate-900/50`}
+                    >
                       <img
                         src={club.logo || "/placeholder.svg"}
                         alt={`${club.name} logo`}
@@ -527,14 +556,16 @@ export default function ClubRegistration() {
                     <Card
                       key={club.id}
                       className={`cursor-pointer transition-all duration-500 hover:scale-105 border-2 ${
-                        isSelected 
-                          ? `ring-2 ring-offset-2 ring-offset-slate-900 ${club.colors.accent} shadow-2xl ${club.colors.glow}` 
+                        isSelected
+                          ? `ring-2 ring-offset-2 ring-offset-slate-900 ${club.colors.accent} shadow-2xl ${club.colors.glow}`
                           : "border-slate-700/50 hover:border-slate-600/50 hover:shadow-xl"
                       } bg-gradient-to-r from-slate-900/80 to-slate-800/80 backdrop-blur-sm`}
                       onClick={() => setSelectedClub(club.id)}
                     >
                       <CardContent className="p-6 text-center">
-                        <div className="w-20 h-20 mx-auto mb-4 rounded-2xl overflow-hidden bg-white shadow-lg shadow-slate-900/50">
+                        <div
+                          className={`w-20 h-20 mx-auto mb-4 rounded-2xl overflow-hidden ${club.id === "cinema" ? "bg-[#851b1b]" : "bg-white"} shadow-lg shadow-slate-900/50`}
+                        >
                           <img
                             src={club.logo || "/placeholder.svg"}
                             alt={`${club.name} logo`}
@@ -681,7 +712,7 @@ export default function ClubRegistration() {
 
           {!isMobile && (
             <div className="space-y-6">
-              <Card className="bg-gradient-to-r from-slate-900/80 to-slate-800/80 backdrop-blur-md shadow-2xl border-slate-700/50 sticky top-4">
+              <Card className="bg-gradient-to-r from-slate-900/80 to-slate-800/80 backdrop-blur-md shadow-2xl border-slate-700/50 fixed top-4 right-4 w-80 z-40">
                 <CardHeader>
                   <CardTitle className="text-center text-cyan-400 text-2xl">Mobile Registration</CardTitle>
                   <CardDescription className="text-center text-slate-300 text-base">
@@ -705,9 +736,9 @@ export default function ClubRegistration() {
                   <p className="text-sm text-slate-300">Scan with phone camera or visit the URL above</p>
                   <div className="flex items-center justify-center gap-2 text-xs text-slate-400">
                     <span>Points to:</span>
-                    <a 
-                      href={WEBSITE_URL} 
-                      target="_blank" 
+                    <a
+                      href={WEBSITE_URL}
+                      target="_blank"
                       rel="noopener noreferrer"
                       className="text-cyan-400 hover:text-cyan-300 flex items-center gap-1"
                     >
@@ -722,7 +753,7 @@ export default function ClubRegistration() {
         </div>
 
         {isMobile && (
-          <Card className="bg-gradient-to-r from-slate-900/80 to-slate-800/80 backdrop-blur-md shadow-2xl border-slate-700/50">
+          <Card className="bg-gradient-to-r from-slate-900/80 to-slate-800/80 backdrop-blur-md shadow-2xl border-slate-700/50 fixed bottom-4 right-4 w-64 z-40">
             <CardHeader>
               <CardTitle className="text-center text-cyan-400 text-xl">For Laptop Users</CardTitle>
             </CardHeader>
