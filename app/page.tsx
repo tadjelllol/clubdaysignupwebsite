@@ -10,7 +10,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox"
 import { Users, Smartphone, Laptop, Sparkles, Film, Wrench, Settings, EyeOff } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
-import Image from "next/image"
 
 const initialClubs = [
   {
@@ -435,11 +434,9 @@ export default function ClubRegistration() {
                 >
                   <CardContent className="p-6 text-center">
                     <div className="w-16 h-16 mx-auto mb-4 rounded-full overflow-hidden bg-white shadow-md">
-                      <Image
+                      <img
                         src={club.logo || "/placeholder.svg"}
                         alt={`${club.name} logo`}
-                        width={64}
-                        height={64}
                         className="w-full h-full object-contain"
                       />
                     </div>
@@ -477,11 +474,9 @@ export default function ClubRegistration() {
                     >
                       <CardContent className="p-6 text-center">
                         <div className="w-16 h-16 mx-auto mb-4 rounded-full overflow-hidden bg-white shadow-md">
-                          <Image
+                          <img
                             src={club.logo || "/placeholder.svg"}
                             alt={`${club.name} logo`}
-                            width={64}
-                            height={64}
                             className="w-full h-full object-contain"
                           />
                         </div>
