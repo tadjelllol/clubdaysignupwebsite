@@ -110,8 +110,12 @@ export async function POST(request: NextRequest) {
       message: `Created new sheet for ${clubName} ${academicYear}`,
       existing: false,
     })
-  } catch (error) {
-    console.error("Error creating sheet:", error)
+  } catch (error: any) {
+    console.error("Error creating sheet:", {
+      message: error?.message,
+      data: error?.response?.data,
+      stack: error?.stack,
+    })
     return NextResponse.json({ error: "Failed to create sheet" }, { status: 500 })
   }
 }

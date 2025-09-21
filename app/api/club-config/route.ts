@@ -18,8 +18,12 @@ export async function GET() {
     const year = getAcademicYear()
     const rows = await readConfigForYear(sheets, configId, year)
     return NextResponse.json({ academicYear: year, clubs: rows })
-  } catch (err) {
-    console.error("GET /club-config error:", err)
+  } catch (err: any) {
+    console.error("GET /club-config error:", {
+      message: err?.message,
+      data: err?.response?.data,
+      stack: err?.stack,
+    })
     return NextResponse.json({ error: "Failed to load config" }, { status: 500 })
   }
 }
@@ -39,8 +43,12 @@ export async function POST(req: NextRequest) {
     await upsertConfigRows(sheets, configId, updates, year)
     const rows = await readConfigForYear(sheets, configId, year)
     return NextResponse.json({ academicYear: year, clubs: rows })
-  } catch (err) {
-    console.error("POST /club-config error:", err)
+  } catch (err: any) {
+    console.error("POST /club-config error:", {
+      message: err?.message,
+      data: err?.response?.data,
+      stack: err?.stack,
+    })
     return NextResponse.json({ error: "Failed to save config" }, { status: 500 })
   }
 }

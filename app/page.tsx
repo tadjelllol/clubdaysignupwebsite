@@ -459,11 +459,11 @@ export default function ClubRegistration() {
                     onClick={async () => {
                       try {
                         const updates = clubs.map((c) => ({ clubId: c.id, clubName: c.name, sheetId: c.sheetId }))
-                        const res = await fetch("/api/club-config", {
+                        const res = await fetch("/api/admin/save-config", {
                           method: "POST",
                           headers: {
                             "Content-Type": "application/json",
-                            "x-admin-secret": process.env.NEXT_PUBLIC_ADMIN_SECRET as string,
+                            // "x-admin-secret": process.env.NEXT_PUBLIC_ADMIN_SECRET as string, // Removed for server-side proxy
                           },
                           body: JSON.stringify({ updates }),
                         })
