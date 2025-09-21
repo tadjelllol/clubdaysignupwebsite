@@ -601,7 +601,7 @@ export default function ClubRegistration() {
         <div className="grid gap-8 lg:grid-cols-2">
           {/* Club Cards - Mobile */}
           {isMobile && (
-            <div className="grid gap-4 md:grid-cols-2"> {/* Changed from md:grid-cols-3 to md:grid-cols-2 */}
+            <div className="grid gap-4 md:grid-cols-3"> {/* Reverted to md:grid-cols-3 */}
               {clubs.map((club) => {
                 const Icon = club.icon
                 const isSelected = selectedClub === club.id
@@ -644,7 +644,7 @@ export default function ClubRegistration() {
           <div className="space-y-6">
             {/* Club Cards - Desktop */}
             {!isMobile && (
-              <div className="grid gap-4 md:grid-cols-2"> {/* Changed from md:grid-cols-3 to md:grid-cols-2 */}
+              <div className="grid gap-4 md:grid-cols-3"> {/* Reverted to md:grid-cols-3 */}
                 {clubs.map((club) => {
                   const Icon = club.icon
                   const isSelected = selectedClub === club.id
@@ -687,11 +687,11 @@ export default function ClubRegistration() {
             {selectedClub && (
               <Card className={`${currentClub?.colors.accent} shadow-2xl ${currentClub?.colors.glow} backdrop-blur-sm`}>
                 <CardHeader>
-                  <CardTitle className={`text-3xl ${currentClub?.colors.text} flex items-center gap-3`}>
-                    {currentClub && <currentClub.icon className="h-8 w-8" />}
+                  <CardTitle className={`text-4xl font-bold ${currentClub?.colors.text} flex items-center gap-3 md:text-5xl`}> {/* Increased font size */}
+                    {currentClub && <currentClub.icon className="h-10 w-10 md:h-12 md:w-12" />} {/* Increased icon size */}
                     Registration Details
                   </CardTitle>
-                  <CardDescription className="text-lg text-slate-300">
+                  <CardDescription className="text-xl text-slate-300 md:text-2xl"> {/* Increased font size */}
                     Fill out your information to join {clubs.find((c) => c.id === selectedClub)?.name}
                   </CardDescription>
                 </CardHeader>
