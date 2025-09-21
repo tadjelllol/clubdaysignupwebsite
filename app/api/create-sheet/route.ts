@@ -111,11 +111,8 @@ export async function POST(request: NextRequest) {
       existing: false,
     })
   } catch (error: any) {
-    console.error("Error creating sheet:", {
-      message: error?.message,
-      data: error?.response?.data,
-      stack: error?.stack,
-    })
-    return NextResponse.json({ error: "Failed to create sheet" }, { status: 500 })
+    const msg = error?.response?.data?.error?.message || error?.message || "Unknown error"
+    console.error("POST /create-sheet error:", msg)
+    return NextResponse.json({ error: msg }, { status: 500 })
   }
 }

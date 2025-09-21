@@ -20,7 +20,17 @@ export function getGoogleClients() {
   return { drive, sheets }
 }
 export async function ensureConfigSheet(drive: any, sheets: any) {
-  // Look for a spreadsheet named "Club Registration Config"
+  const fixedId = process.env.CONFIG_SPREADSHEET_ID
+  if (fixedId) {
+    // Optionally, verify it exists once
+    try {
+      await sheets.spreadsheets.get({ spreadsheetId: fixedId })
+      return fixedId
+    } catch (e) {
+      throw new Error("CONFIG_SPREADSHEET_ID is invalid or not shared with the service account")
+    }
+  }
+  // Fallback to legacy behavior (search + create) — but this hits quota if storage is full
   const search = await drive.files.list({
     q: "name='Club Registration Config' and mimeType='application/vnd.google-apps.spreadsheet'",
     fields: "files(id, name)",
@@ -35,7 +45,6 @@ export async function ensureConfigSheet(drive: any, sheets: any) {
     })
     configId = created.data.id
     if (!configId) throw new Error("Failed to create config sheet")
-    // Initialize headers
     await sheets.spreadsheets.values.update({
       spreadsheetId: configId,
       range: "A1:E1",
