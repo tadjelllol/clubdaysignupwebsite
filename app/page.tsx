@@ -557,10 +557,10 @@ export default function ClubRegistration() {
         )}
       </div>
 
-      <div className="mx-auto max-w-6xl space-y-8 p-4 relative z-10">
+      <div className="mx-auto max-w-6xl space-y-8 p-4 md:pr-[320px] relative z-10"> {/* Added md:pr-[320px] */}
         {/* Main Hero Section with responsive grid */}
         <div className="py-10 md:py-16">
-          <div className="grid grid-cols-1 md:grid-cols-2 items-center gap-8 md:gap-10">
+          <div className="grid grid-cols-1 md:grid-cols-1 items-center gap-8 md:gap-10"> {/* Changed to 1 column on desktop */}
             {/* Left: Hero text */}
             <div className="flex flex-col items-center md:items-start text-center md:text-left relative z-10">
               <div className="relative">
@@ -593,27 +593,7 @@ export default function ClubRegistration() {
                 </div>
               </div>
             </div>
-            {/* Right: QR panel (hidden on mobile) */}
-            <div className="hidden md:flex justify-center md:justify-end relative z-10">
-              <div className="relative">
-                <div className="rounded-2xl border border-cyan-500/20 bg-gradient-to-r from-slate-900/80 to-slate-800/80 p-4 shadow-xl shadow-cyan-500/10 backdrop-blur-sm">
-                  {mounted ? (
-                    <canvas
-                      ref={qrCanvasRef}
-                      className="border-2 border-cyan-500/30 rounded-lg shadow-lg shadow-cyan-500/20 bg-white"
-                      style={{ width: "256px", height: "256px" }}
-                    />
-                  ) : (
-                    <div className="flex justify-center items-center w-64 h-64 bg-slate-800 border-2 border-slate-600 rounded-lg">
-                      <p className="text-slate-400">Loading QR Code...</p>
-                    </div>
-                  )}
-                </div>
-                <div className="mt-3 text-center text-sm text-slate-400">
-                  Scan to register
-                </div>
-              </div>
-            </div>
+            {/* Right: QR panel (removed from here, now a floating component for desktop) */}
           </div>
         </div>
 
@@ -674,7 +654,7 @@ export default function ClubRegistration() {
                       className={`cursor-pointer transition-all duration-500 hover:scale-105 border-2 ${
                         isSelected
                           ? `ring-2 ring-offset-2 ring-offset-slate-900 ${club.colors.accent} shadow-2xl ${club.colors.glow}`
-                          : "border-slate-700/50 hover:border-slate-600/50 hover:shadow-xl"
+                        : "border-slate-700/50 hover:border-slate-600/50 hover:shadow-xl"
                       } bg-gradient-to-r from-slate-900/80 to-slate-800/80 backdrop-blur-sm`}
                       onClick={() => setSelectedClub(club.id)}
                     >
@@ -828,11 +808,50 @@ export default function ClubRegistration() {
               </Card>
             )}
           </div>
-
-          {/* The desktop QR code was previously fixed top-4 right-4. It's now integrated into the main content flow within the grid structure. */}
-          {/* The mobile QR codes (fixed top and fixed bottom) are removed as per the new responsive layout. */}
         </div>
       </div>
+
+      {/* Desktop QR Code - Fixed and always visible */}
+      {!isMobile && (
+        <div className="fixed top-4 right-4 z-40 hidden md:block"> {/* Added hidden md:block */}
+          <Card className="bg-gradient-to-r from-slate-900/80 to-slate-800/80 backdrop-blur-md shadow-2xl border-slate-700/50 w-80">
+            <CardHeader>
+              <CardTitle className="text-center text-cyan-400 text-2xl">Mobile Registration</CardTitle>
+              <CardDescription className="text-center text-slate-300 text-base">
+                Students can scan this QR code to register on their phones
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="text-center space-y-4">
+              {mounted ? (
+                <div className="flex justify-center">
+                  <canvas
+                    ref={qrCanvasRef}
+                    className="border-2 border-cyan-500/30 rounded-xl shadow-2xl shadow-cyan-500/20"
+                    style={{ maxWidth: "256px", maxHeight: "256px" }}
+                  />
+                </div>
+              ) : (
+                <div className="flex justify-center items-center w-64 h-64 bg-slate-800 border-2 border-slate-600 rounded-xl">
+                  <p className="text-slate-400">Loading QR Code...</p>
+                </div>
+              )}
+              <p className="text-sm text-slate-300">Scan with phone camera or visit the URL above</p>
+              <div className="flex items-center justify-center gap-2 text-xs text-slate-400">
+                <span>Points to:</span>
+                <a
+                  href={WEBSITE_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-cyan-400 hover:text-cyan-300 flex items-center gap-1"
+                >
+                  {WEBSITE_URL}
+                  <ExternalLink className="h-3 w-3" />
+                </a>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
     </div>
   )
 }
