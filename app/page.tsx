@@ -129,14 +129,13 @@ export default function ClubRegistration() {
           prev.map((c) => {
             const match = data.clubs.find((r: any) => r.clubId === c.id)
             return match ? { ...c, sheetId: match.sheetId } : c
-          })
+          }),
         )
       } catch (e) {
         console.error("Failed to load config:", e)
       }
     }
     load()
-    // Optional: auto-refresh every 30s so all laptops get updates without reload
     const id = setInterval(load, 30000)
     return () => clearInterval(id)
   }, [])
@@ -165,7 +164,7 @@ export default function ClubRegistration() {
   const createAllSheets = async () => {
     try {
       const updatedClubs = [...clubs]
-      const results = []
+      const results: any[] = []
 
       for (let i = 0; i < updatedClubs.length; i++) {
         const club = updatedClubs[i]
@@ -350,7 +349,6 @@ export default function ClubRegistration() {
         title: "Registered for all clubs",
         description: `Submitted ${result.ok}/${result.total} successfully.`,
       })
-      // reset form
       setFormData({ email: "", name: "", grade: "", photoConsent: false, discord: "" })
     } catch (err) {
       console.error(err)
@@ -381,7 +379,6 @@ export default function ClubRegistration() {
   if (isAdmin) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-black relative overflow-hidden">
-        {/* Grid Background */}
         <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:50px_50px]"></div>
 
         <div className="mx-auto max-w-4xl space-y-8 p-4 relative z-10">
@@ -444,7 +441,7 @@ export default function ClubRegistration() {
                           prev.map((c) => {
                             const m = data.clubs.find((r: any) => r.clubId === c.id)
                             return m ? { ...c, sheetId: m.sheetId } : c
-                          })
+                          }),
                         )
                         toast({ title: "Synced", description: "Latest config loaded." })
                       } catch (e) {
@@ -463,7 +460,6 @@ export default function ClubRegistration() {
                           method: "POST",
                           headers: {
                             "Content-Type": "application/json",
-                            // "x-admin-secret": process.env.NEXT_PUBLIC_ADMIN_SECRET as string, // Removed for server-side proxy
                           },
                           body: JSON.stringify({ updates }),
                         })
@@ -484,15 +480,9 @@ export default function ClubRegistration() {
               <div className="bg-gradient-to-r from-amber-950/50 to-orange-950/50 p-4 rounded-lg border border-amber-500/20 backdrop-blur-sm">
                 <h4 className="font-medium text-amber-300 mb-2">Sheet Names for This Year:</h4>
                 <ul className="text-sm text-amber-200 space-y-1">
-                  <li>
-                    • <strong>Engineering Club Registration 2024/2025</strong>
-                  </li>
-                  <li>
-                    • <strong>Cinema Club Registration 2024/2025</strong>
-                  </li>
-                  <li>
-                    • <strong>McRoberts Scholars Registration 2024/2025</strong>
-                  </li>
+                  <li>• <strong>Engineering Club Registration 2024/2025</strong></li>
+                  <li>• <strong>Cinema Club Registration 2024/2025</strong></li>
+                  <li>• <strong>McRoberts Scholars Registration 2024/2025</strong></li>
                 </ul>
                 <div className="mt-3 pt-3 border-t border-amber-500/20">
                   <p className="text-xs text-amber-300">
@@ -517,7 +507,7 @@ export default function ClubRegistration() {
       <div className="absolute bottom-20 right-10 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl"></div>
       <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl"></div>
 
-      <div className="fixed top-4 right-4 z-50"> {/* Admin Login/Settings */}
+      <div className="fixed top-4 right-4 z-50">
         {!showAdminLogin ? (
           <Button
             onClick={() => setShowAdminLogin(true)}
@@ -557,24 +547,26 @@ export default function ClubRegistration() {
         )}
       </div>
 
-      <div className="mx-auto max-w-6xl space-y-8 p-4 md:pr-[320px] relative z-10"> {/* Added md:pr-[320px] */}
-        {/* Main Hero Section with responsive grid */}
+      {/* Wider container + extra right padding for fixed QR (desktop only) */}
+      <div className="mx-auto max-w-[1400px] 2xl:max-w-[1600px] space-y-8 p-4 md:pr-[22rem] relative z-10">
+        {/* Hero */}
         <div className="py-10 md:py-16">
-          <div className="grid grid-cols-1 md:grid-cols-1 items-center gap-8 md:gap-10"> {/* Changed to 1 column on desktop */}
-            {/* Left: Hero text */}
+          <div className="grid grid-cols-1 md:grid-cols-1 items-center gap-8 md:gap-10">
             <div className="flex flex-col items-center md:items-start text-center md:text-left relative z-10">
               <div className="relative">
                 <div className="absolute inset-0 bg-gradient-to-r from-cyan-600 via-blue-600 to-purple-600 rounded-3xl blur-3xl opacity-30"></div>
-                <div className="relative bg-gradient-to-r from-slate-900/80 to-slate-800/80 backdrop-blur-md rounded-3xl p-12 shadow-2xl border border-slate-700/50">
+                <div className="relative bg-gradient-to-r from-slate-900/80 to-slate-800/80 backdrop-blur-md rounded-3xl p-8 lg:p-10 xl:p-12 shadow-2xl border border-slate-700/50">
                   <div className="flex items-center justify-center gap-4 mb-6">
                     <div className="p-3 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-2xl shadow-lg shadow-cyan-500/25">
                       <Users className="h-12 w-12 text-white" />
                     </div>
-                    <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 bg-clip-text text-transparent leading-tight">
+                    <h1 className="font-bold leading-[1.1] text-[clamp(2rem,3.2vw,3.5rem)] bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 bg-clip-text text-transparent">
                       Club Registration
                     </h1>
                   </div>
-                  <p className="text-slate-300 text-2xl font-medium mb-8">Join the excitement of Clubs Day!</p>
+                  <p className="text-slate-300 font-medium mb-8 text-[clamp(1rem,1.2vw,1.25rem)]">
+                    Join the excitement of Clubs Day!
+                  </p>
 
                   <div className="flex items-center justify-center gap-8 text-sm text-slate-400">
                     <div className="flex items-center gap-2">
@@ -593,15 +585,15 @@ export default function ClubRegistration() {
                 </div>
               </div>
             </div>
-            {/* Right: QR panel (removed from here, now a floating component for desktop) */}
+            {/* QR remains fixed (see bottom), not part of grid */}
           </div>
         </div>
 
-        {/* Club Selection / Registration Form */}
-        <div className="grid gap-8 lg:grid-cols-2">
-          {/* Club Cards - Mobile */}
+        {/* Club Selection + Registration Form */}
+        <div className="grid gap-8 lg:grid-cols-[460px_1fr] xl:grid-cols-[520px_1fr] 2xl:grid-cols-[580px_1fr] items-start">
+          {/* Club Cards - Mobile (unchanged) */}
           {isMobile && (
-            <div className="grid gap-4 md:grid-cols-3"> {/* Reverted to md:grid-cols-3 */}
+            <div className="grid gap-4 md:grid-cols-3">
               {clubs.map((club) => {
                 const Icon = club.icon
                 const isSelected = selectedClub === club.id
@@ -617,7 +609,9 @@ export default function ClubRegistration() {
                   >
                     <CardContent className="p-6 text-center">
                       <div
-                        className={`w-20 h-20 mx-auto mb-4 rounded-2xl overflow-hidden ${club.id === "cinema" ? "bg-[#7b1610]" : "bg-white"} shadow-lg shadow-slate-900/50`}
+                        className={`w-20 h-20 mx-auto mb-4 rounded-2xl overflow-hidden ${
+                          club.id === "cinema" ? "bg-[#7b1610]" : "bg-white"
+                        } shadow-lg shadow-slate-900/50`}
                       >
                         <img
                           src={club.logo || "/placeholder.svg"}
@@ -642,9 +636,9 @@ export default function ClubRegistration() {
           )}
 
           <div className="space-y-6">
-            {/* Club Cards - Desktop */}
+            {/* Club Cards - Desktop: vertical stack so they aren't cramped */}
             {!isMobile && (
-              <div className="grid gap-4 md:grid-cols-3"> {/* Reverted to md:grid-cols-3 */}
+              <div className="grid gap-4 lg:grid-cols-1">
                 {clubs.map((club) => {
                   const Icon = club.icon
                   const isSelected = selectedClub === club.id
@@ -654,13 +648,15 @@ export default function ClubRegistration() {
                       className={`cursor-pointer transition-all duration-500 hover:scale-105 border-2 ${
                         isSelected
                           ? `ring-2 ring-offset-2 ring-offset-slate-900 ${club.colors.accent} shadow-2xl ${club.colors.glow}`
-                        : "border-slate-700/50 hover:border-slate-600/50 hover:shadow-xl"
+                          : "border-slate-700/50 hover:border-slate-600/50 hover:shadow-xl"
                       } bg-gradient-to-r from-slate-900/80 to-slate-800/80 backdrop-blur-sm`}
                       onClick={() => setSelectedClub(club.id)}
                     >
                       <CardContent className="p-6 text-center">
                         <div
-                          className={`w-20 h-20 mx-auto mb-4 rounded-2xl overflow-hidden ${club.id === "cinema" ? "bg-[#7b1610]" : "bg-white"} shadow-lg shadow-slate-900/50`}
+                          className={`w-20 h-20 mx-auto mb-4 rounded-2xl overflow-hidden ${
+                            club.id === "cinema" ? "bg-[#7b1610]" : "bg-white"
+                          } shadow-lg shadow-slate-900/50`}
                         >
                           <img
                             src={club.logo || "/placeholder.svg"}
@@ -687,11 +683,13 @@ export default function ClubRegistration() {
             {selectedClub && (
               <Card className={`${currentClub?.colors.accent} shadow-2xl ${currentClub?.colors.glow} backdrop-blur-sm`}>
                 <CardHeader>
-                  <CardTitle className={`text-4xl font-bold ${currentClub?.colors.text} flex items-center gap-3 md:text-5xl`}> {/* Increased font size */}
-                    {currentClub && <currentClub.icon className="h-10 w-10 md:h-12 md:w-12" />} {/* Increased icon size */}
+                  <CardTitle
+                    className={`flex items-center gap-3 font-bold ${currentClub?.colors.text} text-[clamp(1.5rem,2.2vw,2.5rem)]`}
+                  >
+                    {currentClub && <currentClub.icon className="h-10 w-10 md:h-12 md:w-12" />}
                     Registration Details
                   </CardTitle>
-                  <CardDescription className="text-xl text-slate-300 md:text-2xl"> {/* Increased font size */}
+                  <CardDescription className="text-slate-300 text-[clamp(1rem,1.1vw,1.125rem)]">
                     Fill out your information to join {clubs.find((c) => c.id === selectedClub)?.name}
                   </CardDescription>
                 </CardHeader>
@@ -746,7 +744,7 @@ export default function ClubRegistration() {
                         value={formData.email}
                         onChange={(e) => setFormData((prev) => ({ ...prev, email: e.target.value }))}
                         className="h-12 bg-slate-800/50 border-slate-600 text-slate-200 placeholder:text-slate-500 focus:border-cyan-500 focus:ring-cyan-500/20"
-                          required
+                        required
                       />
                     </div>
 
@@ -789,15 +787,18 @@ export default function ClubRegistration() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                       <Button
                         type="submit"
-                        className={`h-16 text-xl font-semibold ${currentClub?.colors.primary || "bg-gradient-to-r from-cyan-600 to-blue-600"} rounded-2xl`}
+                        className={`font-semibold h-[clamp(2.75rem,3.2vw,3.5rem)] text-[clamp(1rem,1.05vw,1.125rem)] ${
+                          currentClub?.colors.primary || "bg-gradient-to-r from-cyan-600 to-blue-600"
+                        } rounded-2xl`}
                         disabled={isSubmitting}
                       >
                         {isSubmitting ? "Registering..." : `Join ${currentClub?.name}`}
                       </Button>
+
                       <Button
                         type="button"
                         onClick={handleSubmitAll}
-                        className="h-16 text-xl font-semibold bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 rounded-2xl"
+                        className="font-semibold h-[clamp(2.75rem,3.2vw,3.5rem)] text-[clamp(1rem,1.05vw,1.125rem)] bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 rounded-2xl"
                         disabled={isSubmitting}
                       >
                         {isSubmitting ? "Registering..." : "Apply to All Clubs"}
@@ -811,9 +812,9 @@ export default function ClubRegistration() {
         </div>
       </div>
 
-      {/* Desktop QR Code - Fixed and always visible */}
+      {/* Desktop QR Code - Fixed and always visible (unchanged) */}
       {!isMobile && (
-        <div className="fixed top-4 right-4 z-40 hidden md:block"> {/* Added hidden md:block */}
+        <div className="fixed top-4 right-4 z-40 hidden md:block">
           <Card className="bg-gradient-to-r from-slate-900/80 to-slate-800/80 backdrop-blur-md shadow-2xl border-slate-700/50 w-80">
             <CardHeader>
               <CardTitle className="text-center text-cyan-400 text-2xl">Mobile Registration</CardTitle>
