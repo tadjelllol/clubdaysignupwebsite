@@ -517,7 +517,7 @@ export default function ClubRegistration() {
       <div className="absolute bottom-20 right-10 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl"></div>
       <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl"></div>
 
-      <div className="fixed top-4 right-4 z-50">
+      <div className="fixed top-4 right-4 z-50"> {/* Admin Login/Settings */}
         {!showAdminLogin ? (
           <Button
             onClick={() => setShowAdminLogin(true)}
@@ -558,107 +558,111 @@ export default function ClubRegistration() {
       </div>
 
       <div className="mx-auto max-w-6xl space-y-8 p-4 relative z-10">
-        {/* Mobile QR Code - Fixed at top, never moves */}
-        {isMobile && (
-          <div className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-slate-900/95 to-slate-800/95 backdrop-blur-md border-b border-slate-700/50 px-4 py-3">
-            <div className="flex items-center justify-center">
-              <div className="flex items-center gap-3">
-                {mounted ? (
-                  <canvas
-                    ref={qrCanvasRef}
-                    className="border-2 border-cyan-500/30 rounded-lg shadow-lg shadow-cyan-500/20 bg-white"
-                    style={{ width: "60px", height: "60px" }}
-                  />
-                ) : (
-                  <div className="w-15 h-15 bg-slate-800 border-2 border-cyan-500/30 rounded-lg flex items-center justify-center">
-                    <p className="text-xs text-slate-400">Loading...</p>
+        {/* Main Hero Section with responsive grid */}
+        <div className="py-10 md:py-16">
+          <div className="grid grid-cols-1 md:grid-cols-2 items-center gap-8 md:gap-10">
+            {/* Left: Hero text */}
+            <div className="flex flex-col items-center md:items-start text-center md:text-left relative z-10">
+              <div className="relative">
+                <div className="absolute inset-0 bg-gradient-to-r from-cyan-600 via-blue-600 to-purple-600 rounded-3xl blur-3xl opacity-30"></div>
+                <div className="relative bg-gradient-to-r from-slate-900/80 to-slate-800/80 backdrop-blur-md rounded-3xl p-12 shadow-2xl border border-slate-700/50">
+                  <div className="flex items-center justify-center gap-4 mb-6">
+                    <div className="p-3 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-2xl shadow-lg shadow-cyan-500/25">
+                      <Users className="h-12 w-12 text-white" />
+                    </div>
+                    <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 bg-clip-text text-transparent leading-tight">
+                      Club Registration
+                    </h1>
                   </div>
-                )}
-                <div>
-                  <h4 className="text-sm font-medium text-cyan-400">Scan to Register</h4>
-                  <p className="text-xs text-slate-400">QR Code never moves</p>
+                  <p className="text-slate-300 text-2xl font-medium mb-8">Join the excitement of Clubs Day!</p>
+
+                  <div className="flex items-center justify-center gap-8 text-sm text-slate-400">
+                    <div className="flex items-center gap-2">
+                      <div className="p-2 bg-green-500/20 rounded-lg">
+                        <Smartphone className="h-5 w-5 text-green-400" />
+                      </div>
+                      <span>Scan QR code on mobile</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="p-2 bg-blue-500/20 rounded-lg">
+                        <Laptop className="h-5 w-5 text-blue-400" />
+                      </div>
+                      <span>Or use this laptop</span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        )}
-
-        <div className="text-center space-y-8 pt-16">
-          <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-cyan-600 via-blue-600 to-purple-600 rounded-3xl blur-3xl opacity-30"></div>
-            <div className="relative bg-gradient-to-r from-slate-900/80 to-slate-800/80 backdrop-blur-md rounded-3xl p-12 shadow-2xl border border-slate-700/50">
-              <div className="flex items-center justify-center gap-4 mb-6">
-                <div className="p-3 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-2xl shadow-lg shadow-cyan-500/25">
-                  <Users className="h-12 w-12 text-white" />
+            {/* Right: QR panel (hidden on mobile) */}
+            <div className="hidden md:flex justify-center md:justify-end relative z-10">
+              <div className="relative">
+                <div className="rounded-2xl border border-cyan-500/20 bg-gradient-to-r from-slate-900/80 to-slate-800/80 p-4 shadow-xl shadow-cyan-500/10 backdrop-blur-sm">
+                  {mounted ? (
+                    <canvas
+                      ref={qrCanvasRef}
+                      className="border-2 border-cyan-500/30 rounded-lg shadow-lg shadow-cyan-500/20 bg-white"
+                      style={{ width: "256px", height: "256px" }}
+                    />
+                  ) : (
+                    <div className="flex justify-center items-center w-64 h-64 bg-slate-800 border-2 border-slate-600 rounded-lg">
+                      <p className="text-slate-400">Loading QR Code...</p>
+                    </div>
+                  )}
                 </div>
-                <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 bg-clip-text text-transparent leading-tight">
-                  Club Registration
-                </h1>
-              </div>
-              <p className="text-slate-300 text-2xl font-medium mb-8">Join the excitement of Clubs Day!</p>
-
-              <div className="flex items-center justify-center gap-8 text-sm text-slate-400">
-                <div className="flex items-center gap-2">
-                  <div className="p-2 bg-green-500/20 rounded-lg">
-                    <Smartphone className="h-5 w-5 text-green-400" />
-                  </div>
-                  <span>Scan QR code on mobile</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="p-2 bg-blue-500/20 rounded-lg">
-                    <Laptop className="h-5 w-5 text-blue-400" />
-                  </div>
-                  <span>Or use this laptop</span>
+                <div className="mt-3 text-center text-sm text-slate-400">
+                  Scan to register
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        {isMobile && (
-          <div className="grid gap-4 md:grid-cols-3">
-            {clubs.map((club) => {
-              const Icon = club.icon
-              const isSelected = selectedClub === club.id
-              return (
-                <Card
-                  key={club.id}
-                  className={`cursor-pointer transition-all duration-500 hover:scale-105 border-2 ${
-                    isSelected
-                      ? `ring-2 ring-offset-2 ring-offset-slate-900 ${club.colors.accent} shadow-2xl ${club.colors.glow}`
-                      : "border-slate-700/50 hover:border-slate-600/50 hover:shadow-xl"
-                  } bg-gradient-to-r from-slate-900/80 to-slate-800/80 backdrop-blur-sm`}
-                  onClick={() => setSelectedClub(club.id)}
-                >
-                  <CardContent className="p-6 text-center">
-                    <div
-                      className={`w-20 h-20 mx-auto mb-4 rounded-2xl overflow-hidden ${club.id === "cinema" ? "bg-[#7b1610]" : "bg-white"} shadow-lg shadow-slate-900/50`}
-                    >
-                      <img
-                        src={club.logo || "/placeholder.svg"}
-                        alt={`${club.name} logo`}
-                        className="w-full h-full object-contain p-2"
-                      />
-                    </div>
-                    <h3 className={`font-bold text-xl mb-2 ${isSelected ? club.colors.text : "text-slate-200"}`}>
-                      {club.name}
-                    </h3>
-                    <p className="text-sm text-slate-400">{club.description}</p>
-                    {isSelected && (
-                      <div className="mt-3 px-3 py-1 bg-gradient-to-r from-green-500/20 to-emerald-500/20 text-green-400 rounded-full text-xs font-medium border border-green-500/30">
-                        Selected ✓
+        {/* Club Selection / Registration Form */}
+        <div className="grid gap-8 lg:grid-cols-2">
+          {/* Club Cards - Mobile */}
+          {isMobile && (
+            <div className="grid gap-4 md:grid-cols-3">
+              {clubs.map((club) => {
+                const Icon = club.icon
+                const isSelected = selectedClub === club.id
+                return (
+                  <Card
+                    key={club.id}
+                    className={`cursor-pointer transition-all duration-500 hover:scale-105 border-2 ${
+                      isSelected
+                        ? `ring-2 ring-offset-2 ring-offset-slate-900 ${club.colors.accent} shadow-2xl ${club.colors.glow}`
+                        : "border-slate-700/50 hover:border-slate-600/50 hover:shadow-xl"
+                    } bg-gradient-to-r from-slate-900/80 to-slate-800/80 backdrop-blur-sm`}
+                    onClick={() => setSelectedClub(club.id)}
+                  >
+                    <CardContent className="p-6 text-center">
+                      <div
+                        className={`w-20 h-20 mx-auto mb-4 rounded-2xl overflow-hidden ${club.id === "cinema" ? "bg-[#7b1610]" : "bg-white"} shadow-lg shadow-slate-900/50`}
+                      >
+                        <img
+                          src={club.logo || "/placeholder.svg"}
+                          alt={`${club.name} logo`}
+                          className="w-full h-full object-contain p-2"
+                        />
                       </div>
-                    )}
-                  </CardContent>
-                </Card>
-              )
-            })}
-          </div>
-        )}
+                      <h3 className={`font-bold text-xl mb-2 ${isSelected ? club.colors.text : "text-slate-200"}`}>
+                        {club.name}
+                      </h3>
+                      <p className="text-sm text-slate-400">{club.description}</p>
+                      {isSelected && (
+                        <div className="mt-3 px-3 py-1 bg-gradient-to-r from-green-500/20 to-emerald-500/20 text-green-400 rounded-full text-xs font-medium border border-green-500/30">
+                          Selected ✓
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                )
+              })}
+            </div>
+          )}
 
-        <div className={`grid gap-8 ${!isMobile ? "lg:grid-cols-2" : ""}`}>
-          {/* Registration Section */}
           <div className="space-y-6">
+            {/* Club Cards - Desktop */}
             {!isMobile && (
               <div className="grid gap-4 md:grid-cols-3">
                 {clubs.map((club) => {
@@ -762,7 +766,7 @@ export default function ClubRegistration() {
                         value={formData.email}
                         onChange={(e) => setFormData((prev) => ({ ...prev, email: e.target.value }))}
                         className="h-12 bg-slate-800/50 border-slate-600 text-slate-200 placeholder:text-slate-500 focus:border-cyan-500 focus:ring-cyan-500/20"
-                        required
+                          required
                       />
                     </div>
 
@@ -825,70 +829,8 @@ export default function ClubRegistration() {
             )}
           </div>
 
-          {!isMobile && (
-            <div className="space-y-6">
-              <Card className="bg-gradient-to-r from-slate-900/80 to-slate-800/80 backdrop-blur-md shadow-2xl border-slate-700/50 fixed top-4 right-4 w-80 z-40">
-                <CardHeader>
-                  <CardTitle className="text-center text-cyan-400 text-2xl">Mobile Registration</CardTitle>
-                  <CardDescription className="text-center text-slate-300 text-base">
-                    Students can scan this QR code to register on their phones
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="text-center space-y-4">
-                  {mounted ? (
-                    <div className="flex justify-center">
-                      <canvas
-                        ref={qrCanvasRef}
-                        className="border-2 border-cyan-500/30 rounded-xl shadow-2xl shadow-cyan-500/20"
-                        style={{ maxWidth: "256px", maxHeight: "256px" }}
-                      />
-                    </div>
-                  ) : (
-                    <div className="flex justify-center items-center w-64 h-64 bg-slate-800 border-2 border-slate-600 rounded-xl">
-                      <p className="text-slate-400">Loading QR Code...</p>
-                    </div>
-                  )}
-                  <p className="text-sm text-slate-300">Scan with phone camera or visit the URL above</p>
-                  <div className="flex items-center justify-center gap-2 text-xs text-slate-400">
-                    <span>Points to:</span>
-                    <a
-                      href={WEBSITE_URL}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-cyan-400 hover:text-cyan-300 flex items-center gap-1"
-                    >
-                      {WEBSITE_URL}
-                      <ExternalLink className="h-3 w-3" />
-                    </a>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          )}
-
-          {isMobile && (
-            <Card className="bg-gradient-to-r from-slate-900/80 to-slate-800/80 backdrop-blur-md shadow-2xl border-slate-700/50 fixed bottom-4 right-4 w-64 z-40">
-              <CardHeader>
-                <CardTitle className="text-center text-cyan-400 text-xl">For Laptop Users</CardTitle>
-              </CardHeader>
-              <CardContent className="text-center space-y-4">
-                {mounted ? (
-                  <div className="flex justify-center">
-                    <canvas
-                      ref={qrCanvasRef}
-                      className="border-2 border-cyan-500/30 rounded-xl shadow-2xl shadow-cyan-500/20"
-                      style={{ maxWidth: "192px", maxHeight: "192px" }}
-                    />
-                  </div>
-                ) : (
-                  <div className="flex justify-center items-center w-48 h-48 bg-slate-800 border-2 border-slate-600 rounded-xl">
-                    <p className="text-slate-400">Loading QR Code...</p>
-                  </div>
-                )}
-                <p className="text-sm text-slate-300">Show this to students without phones</p>
-              </CardContent>
-            </Card>
-          )}
+          {/* The desktop QR code was previously fixed top-4 right-4. It's now integrated into the main content flow within the grid structure. */}
+          {/* The mobile QR codes (fixed top and fixed bottom) are removed as per the new responsive layout. */}
         </div>
       </div>
     </div>
