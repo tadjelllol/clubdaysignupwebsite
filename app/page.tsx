@@ -601,7 +601,7 @@ export default function ClubRegistration() {
         <div className="grid gap-8 lg:grid-cols-2">
           {/* Club Cards - Mobile */}
           {isMobile && (
-            <div className="grid gap-4 md:grid-cols-3">
+            <div className="grid gap-4 md:grid-cols-2"> {/* Changed from md:grid-cols-3 to md:grid-cols-2 */}
               {clubs.map((club) => {
                 const Icon = club.icon
                 const isSelected = selectedClub === club.id
@@ -644,7 +644,7 @@ export default function ClubRegistration() {
           <div className="space-y-6">
             {/* Club Cards - Desktop */}
             {!isMobile && (
-              <div className="grid gap-4 md:grid-cols-3">
+              <div className="grid gap-4 md:grid-cols-2"> {/* Changed from md:grid-cols-3 to md:grid-cols-2 */}
                 {clubs.map((club) => {
                   const Icon = club.icon
                   const isSelected = selectedClub === club.id
