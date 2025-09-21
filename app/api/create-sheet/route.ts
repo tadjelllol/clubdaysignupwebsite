@@ -1,29 +1,21 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { google } from "googleapis"
+import {
+  getAcademicYear,
+  getGoogleClients,
+  ensureConfigSheet,
+  upsertConfigRows,
+} from "@/app/lib/google"
 
 export async function POST(request: NextRequest) {
   try {
     const { clubName } = await request.json()
+    const clubId = (clubName || "").toLowerCase().replace(/\s+/g, "-") // Generate stable clubId
 
-    const now = new Date()
-    const currentYear = now.getFullYear()
-    const academicYear =
-      now.getMonth() >= 7
-        ? // August or later = new academic year
-          `${currentYear}/${currentYear + 1}`
-        : `${currentYear - 1}/${currentYear}`
+    const academicYear = getAcademicYear() // Use helper
 
     // Initialize Google APIs
-    const auth = new google.auth.GoogleAuth({
-      credentials: {
-        client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
-        private_key: process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, "\n"),
-      },
-      scopes: ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive.file"],
-    })
-
-    const drive = google.drive({ version: "v3", auth })
-    const sheets = google.sheets({ version: "v4", auth })
+    const { drive, sheets } = getGoogleClients() // Use helper
 
     const searchResponse = await drive.files.list({
       q: `name='${clubName} Registration ${academicYear}' and mimeType='application/vnd.google-apps.spreadsheet'`,
@@ -33,6 +25,16 @@ export async function POST(request: NextRequest) {
     if (searchResponse.data.files && searchResponse.data.files.length > 0) {
       // Sheet already exists for this academic year
       const existingSheet = searchResponse.data.files[0]
+
+      // Upsert into config
+      const configId = await ensureConfigSheet(drive, sheets)
+      await upsertConfigRows(
+        sheets,
+        configId,
+        [{ clubId, clubName, sheetId: existingSheet.id as string }],
+        academicYear
+      )
+
       return NextResponse.json({
         sheetId: existingSheet.id,
         message: `Sheet for ${clubName} ${academicYear} already exists`,
@@ -52,6 +54,10 @@ export async function POST(request: NextRequest) {
     if (!sheetId) {
       throw new Error("Failed to create spreadsheet")
     }
+
+    // Upsert into config
+    const configId = await ensureConfigSheet(drive, sheets)
+    await upsertConfigRows(sheets, configId, [{ clubId, clubName, sheetId }], academicYear)
 
     // Add column headers
     const headers = [

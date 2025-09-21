@@ -19,6 +19,7 @@ import {
   EyeOff,
   ArrowRight,
   ExternalLink,
+  RefreshCcw,
 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 
@@ -41,18 +42,18 @@ const initialClubs = [
   },
   {
     id: "cinema",
-    name: "Cinema Club",
+    name: "Cinema and Film Produciton Club",
     sheetId: "YOUR_CINEMA_SHEET_ID",
     icon: Film,
-    logo: "https://i.imgur.com/ZQSRaj8.png",
+    logo: "https://i.imgur.com/tZTR6vZ.png",
     description: "Celebrating the art of film",
     colors: {
       primary:
-        "bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white shadow-lg shadow-red-500/25",
-      accent: "border-red-500/20 bg-gradient-to-r from-red-950/50 to-pink-950/50 backdrop-blur-sm",
+        "bg-gradient-to-r from-[#7b160f] to-pink-600 hover:from-red-600 hover:to-pink-700 text-white shadow-lg shadow-red-500/25",
+      accent: "border-[rgb(123,22,16)]/20 bg-gradient-to-r from-red-950/50 to-pink-950/50 backdrop-blur-sm",
       text: "text-red-400",
       gradient: "from-red-400 via-pink-500 to-rose-600",
-      glow: "shadow-red-500/50",
+      glow: "shadow-[#7b160f]/50",
     },
   },
   {
@@ -116,6 +117,29 @@ export default function ClubRegistration() {
       generateQRCode()
     }
   }, [mounted, isAdmin])
+
+  // Load config from API
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const res = await fetch("/api/club-config", { cache: "no-store" })
+        if (!res.ok) throw new Error(await res.text())
+        const data = await res.json()
+        setClubs((prev) =>
+          prev.map((c) => {
+            const match = data.clubs.find((r: any) => r.clubId === c.id)
+            return match ? { ...c, sheetId: match.sheetId } : c
+          })
+        )
+      } catch (e) {
+        console.error("Failed to load config:", e)
+      }
+    }
+    load()
+    // Optional: auto-refresh every 30s so all laptops get updates without reload
+    const id = setInterval(load, 30000)
+    return () => clearInterval(id)
+  }, [])
 
   const handleAdminLogin = () => {
     if (adminPassword === "123") {
@@ -294,6 +318,48 @@ export default function ClubRegistration() {
     }
   }
 
+  const handleSubmitAll = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsSubmitting(true)
+    try {
+      const configured = clubs.filter((c) => c.sheetId && !c.sheetId.startsWith("YOUR_"))
+      if (configured.length === 0) {
+        toast({ title: "No clubs configured", variant: "destructive" })
+        setIsSubmitting(false)
+        return
+      }
+      const timestamp = new Date().toISOString()
+      const res = await fetch("/api/submit-registration-multi", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          sheetIds: configured.map((c) => c.sheetId),
+          data: {
+            timestamp,
+            email: formData.email,
+            name: formData.name,
+            grade: formData.grade,
+            photoConsent: formData.photoConsent,
+            discord: formData.discord || "Not provided",
+          },
+        }),
+      })
+      if (!res.ok) throw new Error(await res.text())
+      const result = await res.json()
+      toast({
+        title: "Registered for all clubs",
+        description: `Submitted ${result.ok}/${result.total} successfully.`,
+      })
+      // reset form
+      setFormData({ email: "", name: "", grade: "", photoConsent: false, discord: "" })
+    } catch (err) {
+      console.error(err)
+      toast({ title: "Batch registration failed", variant: "destructive" })
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
   const generateQRCode = async () => {
     if (!mounted || !qrCanvasRef.current) return
 
@@ -367,6 +433,52 @@ export default function ClubRegistration() {
                     />
                   </div>
                 ))}
+                <div className="flex justify-end gap-3 mt-4">
+                  <Button
+                    variant="outline"
+                    onClick={async () => {
+                      try {
+                        const res = await fetch("/api/club-config", { cache: "no-store" })
+                        const data = await res.json()
+                        setClubs((prev) =>
+                          prev.map((c) => {
+                            const m = data.clubs.find((r: any) => r.clubId === c.id)
+                            return m ? { ...c, sheetId: m.sheetId } : c
+                          })
+                        )
+                        toast({ title: "Synced", description: "Latest config loaded." })
+                      } catch (e) {
+                        console.error("Failed to refresh config:", e)
+                        toast({ title: "Refresh failed", description: "Check server logs.", variant: "destructive" })
+                      }
+                    }}
+                  >
+                    <RefreshCcw className="h-4 w-4 mr-2" /> Refresh Config
+                  </Button>
+                  <Button
+                    onClick={async () => {
+                      try {
+                        const updates = clubs.map((c) => ({ clubId: c.id, clubName: c.name, sheetId: c.sheetId }))
+                        const res = await fetch("/api/club-config", {
+                          method: "POST",
+                          headers: {
+                            "Content-Type": "application/json",
+                            "x-admin-secret": process.env.NEXT_PUBLIC_ADMIN_SECRET as string,
+                          },
+                          body: JSON.stringify({ updates }),
+                        })
+                        if (!res.ok) throw new Error(await res.text())
+                        toast({ title: "Saved", description: "Config updated for all laptops." })
+                      } catch (e) {
+                        console.error("Failed to save config:", e)
+                        toast({ title: "Save failed", description: "Check server logs.", variant: "destructive" })
+                      }
+                    }}
+                    className="bg-cyan-600 hover:bg-cyan-700"
+                  >
+                    Save Config
+                  </Button>
+                </div>
               </div>
 
               <div className="bg-gradient-to-r from-amber-950/50 to-orange-950/50 p-4 rounded-lg border border-amber-500/20 backdrop-blur-sm">
@@ -520,7 +632,7 @@ export default function ClubRegistration() {
                 >
                   <CardContent className="p-6 text-center">
                     <div
-                      className={`w-20 h-20 mx-auto mb-4 rounded-2xl overflow-hidden ${club.id === "cinema" ? "bg-[#851b1b]" : "bg-white"} shadow-lg shadow-slate-900/50`}
+                      className={`w-20 h-20 mx-auto mb-4 rounded-2xl overflow-hidden ${club.id === "cinema" ? "bg-[#7b1610]" : "bg-white"} shadow-lg shadow-slate-900/50`}
                     >
                       <img
                         src={club.logo || "/placeholder.svg"}
@@ -564,7 +676,7 @@ export default function ClubRegistration() {
                     >
                       <CardContent className="p-6 text-center">
                         <div
-                          className={`w-20 h-20 mx-auto mb-4 rounded-2xl overflow-hidden ${club.id === "cinema" ? "bg-[#851b1b]" : "bg-white"} shadow-lg shadow-slate-900/50`}
+                          className={`w-20 h-20 mx-auto mb-4 rounded-2xl overflow-hidden ${club.id === "cinema" ? "bg-[#7b1610]" : "bg-white"} shadow-lg shadow-slate-900/50`}
                         >
                           <img
                             src={club.logo || "/placeholder.svg"}
@@ -690,20 +802,23 @@ export default function ClubRegistration() {
                       </div>
                     </div>
 
-                    <Button
-                      type="submit"
-                      className={`w-full h-16 text-xl font-semibold ${currentClub?.colors.primary || "bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 shadow-lg shadow-cyan-500/25"} rounded-2xl transition-all duration-300 hover:scale-105`}
-                      disabled={isSubmitting}
-                    >
-                      {isSubmitting ? (
-                        "Registering..."
-                      ) : (
-                        <span className="flex items-center gap-2">
-                          Join {currentClub?.name} Now!
-                          <ArrowRight className="h-5 w-5" />
-                        </span>
-                      )}
-                    </Button>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <Button
+                        type="submit"
+                        className={`h-16 text-xl font-semibold ${currentClub?.colors.primary || "bg-gradient-to-r from-cyan-600 to-blue-600"} rounded-2xl`}
+                        disabled={isSubmitting}
+                      >
+                        {isSubmitting ? "Registering..." : `Join ${currentClub?.name}`}
+                      </Button>
+                      <Button
+                        type="button"
+                        onClick={handleSubmitAll}
+                        className="h-16 text-xl font-semibold bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 rounded-2xl"
+                        disabled={isSubmitting}
+                      >
+                        {isSubmitting ? "Registering..." : "Apply to All Clubs"}
+                      </Button>
+                    </div>
                   </form>
                 </CardContent>
               </Card>
@@ -750,31 +865,31 @@ export default function ClubRegistration() {
               </Card>
             </div>
           )}
-        </div>
 
-        {isMobile && (
-          <Card className="bg-gradient-to-r from-slate-900/80 to-slate-800/80 backdrop-blur-md shadow-2xl border-slate-700/50 fixed bottom-4 right-4 w-64 z-40">
-            <CardHeader>
-              <CardTitle className="text-center text-cyan-400 text-xl">For Laptop Users</CardTitle>
-            </CardHeader>
-            <CardContent className="text-center space-y-4">
-              {mounted ? (
-                <div className="flex justify-center">
-                  <canvas
-                    ref={qrCanvasRef}
-                    className="border-2 border-cyan-500/30 rounded-xl shadow-2xl shadow-cyan-500/20"
-                    style={{ maxWidth: "192px", maxHeight: "192px" }}
-                  />
-                </div>
-              ) : (
-                <div className="flex justify-center items-center w-48 h-48 bg-slate-800 border-2 border-slate-600 rounded-xl">
-                  <p className="text-slate-400">Loading QR Code...</p>
-                </div>
-              )}
-              <p className="text-sm text-slate-300">Show this to students without phones</p>
-            </CardContent>
-          </Card>
-        )}
+          {isMobile && (
+            <Card className="bg-gradient-to-r from-slate-900/80 to-slate-800/80 backdrop-blur-md shadow-2xl border-slate-700/50 fixed bottom-4 right-4 w-64 z-40">
+              <CardHeader>
+                <CardTitle className="text-center text-cyan-400 text-xl">For Laptop Users</CardTitle>
+              </CardHeader>
+              <CardContent className="text-center space-y-4">
+                {mounted ? (
+                  <div className="flex justify-center">
+                    <canvas
+                      ref={qrCanvasRef}
+                      className="border-2 border-cyan-500/30 rounded-xl shadow-2xl shadow-cyan-500/20"
+                      style={{ maxWidth: "192px", maxHeight: "192px" }}
+                    />
+                  </div>
+                ) : (
+                  <div className="flex justify-center items-center w-48 h-48 bg-slate-800 border-2 border-slate-600 rounded-xl">
+                    <p className="text-slate-400">Loading QR Code...</p>
+                  </div>
+                )}
+                <p className="text-sm text-slate-300">Show this to students without phones</p>
+              </CardContent>
+            </Card>
+          )}
+        </div>
       </div>
     </div>
   )
