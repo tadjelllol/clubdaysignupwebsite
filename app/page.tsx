@@ -740,7 +740,7 @@ export default function ClubRegistration() {
                       <Input
                         id="email"
                         type="email"
-                        placeholder="your.email@school.edu"
+                        placeholder="your.email@gmail.com"
                         value={formData.email}
                         onChange={(e) => setFormData((prev) => ({ ...prev, email: e.target.value }))}
                         className="h-12 bg-slate-800/50 border-slate-600 text-slate-200 placeholder:text-slate-500 focus:border-cyan-500 focus:ring-cyan-500/20"
